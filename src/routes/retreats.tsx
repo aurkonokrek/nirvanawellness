@@ -26,6 +26,8 @@ function RetreatsPage() {
   return (
     <div>
       <PageHeader
+        crumbs={[{ label: "Retreats" }]}
+
         eyebrow="Retreats"
         title={
           <>
