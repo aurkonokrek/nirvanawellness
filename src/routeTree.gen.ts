@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RetreatsSlugRouteImport } from './routes/retreats.$slug'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const RetreatsRoute = RetreatsRouteImport.update({
   id: '/retreats',
@@ -76,6 +77,11 @@ const ExpertsSlugRoute = ExpertsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ExpertsRoute,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/experts': typeof ExpertsRouteWithChildren
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
+  '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/experts': typeof ExpertsRouteWithChildren
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
+  '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/experts': typeof ExpertsRouteWithChildren
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
+  '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/experts'
     | '/resources'
     | '/retreats'
+    | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/retreats/$slug'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/experts'
     | '/resources'
     | '/retreats'
+    | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/retreats/$slug'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/experts'
     | '/resources'
     | '/retreats'
+    | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/retreats/$slug'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   ExpertsRoute: typeof ExpertsRouteWithChildren
   ResourcesRoute: typeof ResourcesRouteWithChildren
   RetreatsRoute: typeof RetreatsRouteWithChildren
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -249,6 +262,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExpertsSlugRouteImport
       parentRoute: typeof ExpertsRoute
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -296,6 +316,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExpertsRoute: ExpertsRouteWithChildren,
   ResourcesRoute: ResourcesRouteWithChildren,
   RetreatsRoute: RetreatsRouteWithChildren,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

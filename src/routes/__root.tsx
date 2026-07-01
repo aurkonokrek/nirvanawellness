@@ -8,7 +8,9 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Facebook, Instagram, Youtube } from "lucide-react";
+import { ChatWidget } from "@/components/ChatWidget";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
