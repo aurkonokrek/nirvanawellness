@@ -1,7 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ExpertCard } from "@/components/ExpertCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getResource, type ContentBlock } from "@/data/resources";
 import { getExpert } from "@/data/experts";
+
 
 export const Route = createFileRoute("/resources/$slug")({
   loader: ({ params }) => {
