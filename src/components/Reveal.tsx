@@ -22,8 +22,10 @@ export function Reveal({
 }) {
   const ref = useRef<HTMLElement | null>(null);
   const [shown, setShown] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (typeof window === "undefined") return;
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mq.matches) {
@@ -32,6 +34,12 @@ export function Reveal({
     }
     const el = ref.current;
     if (!el) return;
+    // If already in view at mount, show immediately.
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.9 && rect.bottom > 0) {
+      setShown(true);
+      return;
+    }
     const obs = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
@@ -42,7 +50,7 @@ export function Reveal({
           }
         }
       },
-      { rootMargin: "0px 0px -10% 0px", threshold: 0.12 },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.05 },
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -55,6 +63,7 @@ export function Reveal({
   return (
     <Tag
       ref={ref as never}
+      data-reveal={shown ? "shown" : mounted ? "hidden" : "ssr"}
       style={style}
       className={
         "transition-[opacity,transform] duration-[900ms] ease-out will-change-transform " +
