@@ -147,23 +147,26 @@ function Header() {
           </span>
         </Link>
         <nav className="hidden items-center gap-8 lg:flex">
-          {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="group relative py-1 text-sm text-foreground/70 transition-colors hover:text-foreground"
-              activeProps={{
-                className:
-                  "text-[color:var(--navy)] font-medium",
-              }}
-            >
-              {item.label}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-[2px] scale-x-0 bg-gold-gradient transition-transform duration-300 origin-left group-hover:scale-x-100 group-data-[status=active]:scale-x-100"
-              />
-            </Link>
-          ))}
+          {NAV.map((item) =>
+            "children" in item ? (
+              <NavDropdown key={item.label} item={item} />
+            ) : (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="group relative py-1 text-sm text-foreground/70 transition-colors hover:text-foreground"
+                activeProps={{
+                  className: "text-[color:var(--navy)] font-medium",
+                }}
+              >
+                {item.label}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-[2px] scale-x-0 bg-gold-gradient transition-transform duration-300 origin-left group-hover:scale-x-100 group-data-[status=active]:scale-x-100"
+                />
+              </Link>
+            ),
+          )}
         </nav>
 
         <div className="hidden lg:block">
