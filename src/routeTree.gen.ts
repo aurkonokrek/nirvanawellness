@@ -19,6 +19,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as ExpertsIndexRouteImport } from './routes/experts.index'
 import { Route as RetreatsSlugRouteImport } from './routes/retreats.$slug'
+import { Route as ResourcesTestsRouteImport } from './routes/resources.tests'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -73,6 +74,11 @@ const RetreatsSlugRoute = RetreatsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => RetreatsRoute,
 } as any)
+const ResourcesTestsRoute = ResourcesTestsRouteImport.update({
+  id: '/tests',
+  path: '/tests',
+  getParentRoute: () => ResourcesRoute,
+} as any)
 const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/resources/tests': typeof ResourcesTestsRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts/': typeof ExpertsIndexRoute
   '/resources/': typeof ResourcesIndexRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/resources/tests': typeof ResourcesTestsRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts': typeof ExpertsIndexRoute
   '/resources': typeof ResourcesIndexRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/resources/tests': typeof ResourcesTestsRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts/': typeof ExpertsIndexRoute
   '/resources/': typeof ResourcesIndexRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
+    | '/resources/tests'
     | '/retreats/$slug'
     | '/experts/'
     | '/resources/'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
+    | '/resources/tests'
     | '/retreats/$slug'
     | '/experts'
     | '/resources'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
+    | '/resources/tests'
     | '/retreats/$slug'
     | '/experts/'
     | '/resources/'
@@ -266,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RetreatsSlugRouteImport
       parentRoute: typeof RetreatsRoute
     }
+    '/resources/tests': {
+      id: '/resources/tests'
+      path: '/tests'
+      fullPath: '/resources/tests'
+      preLoaderRoute: typeof ResourcesTestsRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
     '/resources/$slug': {
       id: '/resources/$slug'
       path: '/$slug'
@@ -292,11 +311,13 @@ declare module '@tanstack/react-router' {
 
 interface ResourcesRouteChildren {
   ResourcesSlugRoute: typeof ResourcesSlugRoute
+  ResourcesTestsRoute: typeof ResourcesTestsRoute
   ResourcesIndexRoute: typeof ResourcesIndexRoute
 }
 
 const ResourcesRouteChildren: ResourcesRouteChildren = {
   ResourcesSlugRoute: ResourcesSlugRoute,
+  ResourcesTestsRoute: ResourcesTestsRoute,
   ResourcesIndexRoute: ResourcesIndexRoute,
 }
 
