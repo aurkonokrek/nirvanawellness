@@ -34,10 +34,12 @@ function ExpertsPage() {
   return (
     <div>
       <PageHeader
+        crumbs={[{ label: "Experts" }]}
         eyebrow="Experts"
         title="The people behind the practice."
         lede="Bios and credentials below are sourced from nirvanawellness.org. Additional detail is pending direct confirmation from each practitioner."
       />
+
 
       {/* Filters */}
       <section className="mx-auto max-w-7xl px-6 py-8 lg:px-10">
