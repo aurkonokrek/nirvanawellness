@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/book")({
   head: () => ({
@@ -33,7 +35,6 @@ function BookPage() {
   const [active, setActive] = useState<Path>("session");
   return (
     <div>
-      {/* Header */}
       <section className="border-b border-border">
         <div className="mx-auto max-w-7xl px-6 pb-12 pt-24 lg:px-10 lg:pt-32">
           <p className="font-eyebrow text-muted-foreground">Reach us</p>
@@ -47,7 +48,6 @@ function BookPage() {
         </div>
       </section>
 
-      {/* Path selector */}
       <section className="mx-auto max-w-7xl px-6 pt-12 lg:px-10">
         <div className="grid gap-3 md:grid-cols-3">
           {PATHS.map((p) => {
@@ -85,22 +85,38 @@ function BookPage() {
         </div>
       </section>
 
-      {/* Active path form */}
       <section className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
         {active === "session" && <SessionForm />}
         {active === "corporate" && <CorporateForm />}
         {active === "contact" && <ContactForm />}
       </section>
 
-      {/* Expat reassurance section (lives inside /book) */}
       <ExpatSection />
     </div>
   );
 }
 
-/* ---------- Session form (with timezone auto-detect) ---------- */
+/* ---------- Success panel ---------- */
+function SuccessPanel({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="rounded-lg border border-[color:var(--gold)]/40 bg-[color:var(--sand)]/40 p-8">
+      <div className="flex items-center gap-3">
+        <span className="grid h-9 w-9 place-items-center rounded-full bg-gold-gradient text-[color:var(--navy)]">
+          <Check className="h-5 w-5" />
+        </span>
+        <h3 className="font-display text-2xl">{title}</h3>
+      </div>
+      <p className="mt-3 text-muted-foreground">{body}</p>
+    </div>
+  );
+}
+
+/* ---------- Session form ---------- */
 function SessionForm() {
   const [tz, setTz] = useState<string>("");
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
   const zones = useMemo(
     () => [
       "Asia/Dhaka",
@@ -127,11 +143,50 @@ function SessionForm() {
 
   const zoneOptions = tz && !zones.includes(tz) ? [tz, ...zones] : zones;
 
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (submitting) return;
+    const f = new FormData(e.currentTarget);
+    const payload = {
+      name: String(f.get("name") || "").trim(),
+      email: String(f.get("email") || "").trim(),
+      phone: String(f.get("phone") || "").trim() || null,
+      session_type: String(f.get("session_type") || "individual"),
+      preferred_format: String(f.get("preferred_format") || "either"),
+      timezone: tz || null,
+      notes: String(f.get("notes") || "").trim() || null,
+    };
+    if (!payload.name || !payload.email) {
+      toast.error("Please add your name and email.");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("session_requests").insert(payload);
+    setSubmitting(false);
+    if (error) {
+      toast.error("Something went wrong. Please try again.");
+      return;
+    }
+    setDone(true);
+  }
+
+  if (done) {
+    return (
+      <div className="grid gap-8 lg:grid-cols-[2fr_3fr]">
+        <div>
+          <h2 className="font-display text-3xl">Booking request received</h2>
+          <p className="mt-3 text-muted-foreground">Thank you for reaching out.</p>
+        </div>
+        <SuccessPanel
+          title="We'll be in touch within one business day."
+          body="A member of the Nirvana team will review your request and confirm a time with the clinician best matched to what you shared."
+        />
+      </div>
+    );
+  }
+
   return (
-    <form
-      onSubmit={(e) => e.preventDefault()}
-      className="grid gap-8 lg:grid-cols-[2fr_3fr]"
-    >
+    <form onSubmit={onSubmit} className="grid gap-8 lg:grid-cols-[2fr_3fr]">
       <div>
         <h2 className="font-display text-3xl">Book a session</h2>
         <p className="mt-3 text-muted-foreground">
@@ -140,26 +195,26 @@ function SessionForm() {
       </div>
       <div className="space-y-5">
         <Field label="Your name">
-          <input type="text" required className={inputCls} placeholder="First and last name" />
+          <input name="name" type="text" required className={inputCls} placeholder="First and last name" />
         </Field>
         <div className="grid gap-5 md:grid-cols-2">
           <Field label="Email">
-            <input type="email" required className={inputCls} placeholder="you@example.com" />
+            <input name="email" type="email" required className={inputCls} placeholder="you@example.com" />
           </Field>
           <Field label="Phone">
-            <input type="tel" className={inputCls} placeholder="Optional" />
+            <input name="phone" type="tel" className={inputCls} placeholder="Optional" />
           </Field>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
           <Field label="Session type">
-            <select className={inputCls} defaultValue="individual">
+            <select name="session_type" className={inputCls} defaultValue="individual">
               <option value="individual">1:1 individual</option>
               <option value="couples">Couples</option>
               <option value="unsure">Not sure — please match me</option>
             </select>
           </Field>
           <Field label="Preferred format">
-            <select className={inputCls} defaultValue="either">
+            <select name="preferred_format" className={inputCls} defaultValue="either">
               <option value="in-person">In person (Dhaka)</option>
               <option value="online">Online</option>
               <option value="either">Either</option>
@@ -167,27 +222,25 @@ function SessionForm() {
           </Field>
         </div>
         <Field label="Timezone" hint={tz ? `Detected: ${tz} — change if needed` : "Select your timezone"}>
-          <select
-            className={inputCls}
-            value={tz}
-            onChange={(e) => setTz(e.target.value)}
-          >
+          <select className={inputCls} value={tz} onChange={(e) => setTz(e.target.value)}>
             {zoneOptions.map((z) => (
               <option key={z} value={z}>{z}</option>
             ))}
           </select>
         </Field>
         <Field label="Anything you'd like us to know">
-          <textarea rows={4} className={inputCls} placeholder="Optional. As much or as little as you'd like." />
+          <textarea name="notes" rows={4} className={inputCls} placeholder="Optional. As much or as little as you'd like." />
         </Field>
         <button
           type="submit"
-          className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-6 py-3 text-sm font-medium text-[color:var(--navy)]"
+          disabled={submitting}
+          className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-6 py-3 text-sm font-medium text-[color:var(--navy)] disabled:opacity-60"
         >
-          Request booking <ArrowRight className="h-4 w-4" />
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+          {submitting ? "Sending…" : "Request booking"}
         </button>
         <p className="text-xs text-muted-foreground">
-          Form wiring lands in Phase 4. Submissions are not yet stored or sent.
+          A human on our team will look at every request — no auto-scheduling. We reply within one business day.
         </p>
       </div>
     </form>
@@ -196,8 +249,53 @@ function SessionForm() {
 
 /* ---------- Corporate inquiry form ---------- */
 function CorporateForm() {
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (submitting) return;
+    const f = new FormData(e.currentTarget);
+    const payload = {
+      name: String(f.get("name") || "").trim(),
+      role: String(f.get("role") || "").trim() || null,
+      organisation: String(f.get("organisation") || "").trim(),
+      work_email: String(f.get("work_email") || "").trim(),
+      team_size: String(f.get("team_size") || "") || null,
+      program_interest: String(f.get("program_interest") || "") || null,
+      context: String(f.get("context") || "").trim() || null,
+    };
+    if (!payload.name || !payload.organisation || !payload.work_email) {
+      toast.error("Please add your name, organisation, and work email.");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("corporate_inquiries").insert(payload);
+    setSubmitting(false);
+    if (error) {
+      toast.error("Something went wrong. Please try again.");
+      return;
+    }
+    setDone(true);
+  }
+
+  if (done) {
+    return (
+      <div className="grid gap-8 lg:grid-cols-[2fr_3fr]">
+        <div>
+          <h2 className="font-display text-3xl">Inquiry received</h2>
+          <p className="mt-3 text-muted-foreground">Thanks for considering Nirvana for your team.</p>
+        </div>
+        <SuccessPanel
+          title="We'll come back with a proposal shortly."
+          body="Someone from our corporate team will follow up within one business day to set up a short discovery call and start shaping a program that fits your context."
+        />
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="grid gap-8 lg:grid-cols-[2fr_3fr]">
+    <form onSubmit={onSubmit} className="grid gap-8 lg:grid-cols-[2fr_3fr]">
       <div>
         <h2 className="font-display text-3xl">Corporate inquiry</h2>
         <p className="mt-3 text-muted-foreground">
@@ -206,16 +304,16 @@ function CorporateForm() {
       </div>
       <div className="space-y-5">
         <div className="grid gap-5 md:grid-cols-2">
-          <Field label="Your name"><input type="text" required className={inputCls} /></Field>
-          <Field label="Role"><input type="text" className={inputCls} placeholder="e.g. Head of People" /></Field>
+          <Field label="Your name"><input name="name" type="text" required className={inputCls} /></Field>
+          <Field label="Role"><input name="role" type="text" className={inputCls} placeholder="e.g. Head of People" /></Field>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
-          <Field label="Organisation"><input type="text" required className={inputCls} /></Field>
-          <Field label="Work email"><input type="email" required className={inputCls} /></Field>
+          <Field label="Organisation"><input name="organisation" type="text" required className={inputCls} /></Field>
+          <Field label="Work email"><input name="work_email" type="email" required className={inputCls} /></Field>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
           <Field label="Team size">
-            <select className={inputCls} defaultValue="50-200">
+            <select name="team_size" className={inputCls} defaultValue="50-200">
               <option>1–50</option>
               <option>50–200</option>
               <option>200–500</option>
@@ -223,7 +321,7 @@ function CorporateForm() {
             </select>
           </Field>
           <Field label="Program interest">
-            <select className={inputCls} defaultValue="mixed">
+            <select name="program_interest" className={inputCls} defaultValue="mixed">
               <option value="1to1">Confidential 1:1 access</option>
               <option value="workshops">Workshops & training</option>
               <option value="retreat">Off-site retreat</option>
@@ -231,9 +329,16 @@ function CorporateForm() {
             </select>
           </Field>
         </div>
-        <Field label="Context"><textarea rows={4} className={inputCls} placeholder="Where is your team right now, and what would 'good' look like?" /></Field>
-        <button type="submit" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground">
-          Send inquiry <ArrowRight className="h-4 w-4" />
+        <Field label="Context">
+          <textarea name="context" rows={4} className={inputCls} placeholder="Where is your team right now, and what would 'good' look like?" />
+        </Field>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground disabled:opacity-60"
+        >
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+          {submitting ? "Sending…" : "Send inquiry"}
         </button>
       </div>
     </form>
@@ -242,8 +347,49 @@ function CorporateForm() {
 
 /* ---------- General contact form ---------- */
 function ContactForm() {
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (submitting) return;
+    const f = new FormData(e.currentTarget);
+    const payload = {
+      name: String(f.get("name") || "").trim(),
+      email: String(f.get("email") || "").trim(),
+      message: String(f.get("message") || "").trim(),
+    };
+    if (!payload.name || !payload.email || !payload.message) {
+      toast.error("Please fill in every field.");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("contact_messages").insert(payload);
+    setSubmitting(false);
+    if (error) {
+      toast.error("Something went wrong. Please try again.");
+      return;
+    }
+    setDone(true);
+  }
+
+  if (done) {
+    return (
+      <div className="grid gap-8 lg:grid-cols-[2fr_3fr]">
+        <div>
+          <h2 className="font-display text-3xl">Message received</h2>
+          <p className="mt-3 text-muted-foreground">Thank you for writing to us.</p>
+        </div>
+        <SuccessPanel
+          title="We'll get back to you soon."
+          body="Someone from our team will read your note and reply within one business day."
+        />
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="grid gap-8 lg:grid-cols-[2fr_3fr]">
+    <form onSubmit={onSubmit} className="grid gap-8 lg:grid-cols-[2fr_3fr]">
       <div>
         <h2 className="font-display text-3xl">General contact</h2>
         <p className="mt-3 text-muted-foreground">
@@ -252,19 +398,24 @@ function ContactForm() {
       </div>
       <div className="space-y-5">
         <div className="grid gap-5 md:grid-cols-2">
-          <Field label="Name"><input type="text" required className={inputCls} /></Field>
-          <Field label="Email"><input type="email" required className={inputCls} /></Field>
+          <Field label="Name"><input name="name" type="text" required className={inputCls} /></Field>
+          <Field label="Email"><input name="email" type="email" required className={inputCls} /></Field>
         </div>
-        <Field label="Message"><textarea rows={5} className={inputCls} /></Field>
-        <button type="submit" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground">
-          Send message <ArrowRight className="h-4 w-4" />
+        <Field label="Message"><textarea name="message" rows={5} required className={inputCls} /></Field>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground disabled:opacity-60"
+        >
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+          {submitting ? "Sending…" : "Send message"}
         </button>
       </div>
     </form>
   );
 }
 
-/* ---------- Expat reassurance (section within /book) ---------- */
+/* ---------- Expat reassurance ---------- */
 function ExpatSection() {
   return (
     <section className="border-t border-border bg-[color:var(--sand)]/40">
