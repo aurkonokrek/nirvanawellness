@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, MapPin, Languages, Award } from "lucide-react";
+import { ExpertCard } from "@/components/ExpertCard";
 import { getExpert, EXPERTS } from "@/data/experts";
 
 export const Route = createFileRoute("/experts/$slug")({
@@ -160,22 +161,12 @@ function ExpertProfilePage() {
           <p className="font-eyebrow text-muted-foreground">Also on the {expert.pillars.join(" / ")} side of the practice</p>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {related.map((r) => (
-              <Link
-                key={r.slug}
-                to="/experts/$slug"
-                params={{ slug: r.slug }}
-                className="group flex flex-col rounded-lg border border-border bg-card p-6 transition-colors hover:border-[color:var(--gold-deep)]"
-              >
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[color:var(--navy)] font-display text-2xl text-gold-gradient">
-                  {initials(r.name)}
-                </div>
-                <p className="mt-4 font-display text-xl group-hover:text-[color:var(--gold-deep)]">{r.name}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{r.role}</p>
-              </Link>
+              <ExpertCard key={r.slug} expert={r} variant="compact" />
             ))}
           </div>
         </section>
       )}
+
     </div>
   );
 }
