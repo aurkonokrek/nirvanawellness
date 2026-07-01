@@ -88,11 +88,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
         {activity.title}
       </p>
       <p className="mt-2 text-sm text-foreground/85">{activity.lede}</p>
-      <p className="mt-4 text-xs text-muted-foreground">{activity.who}</p>
-      <div className="mt-5 flex flex-wrap gap-4 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" />{activity.duration}</span>
-        <span className="inline-flex items-center gap-1.5"><Repeat className="h-3.5 w-3.5" />{activity.cadence}</span>
-      </div>
+      <p className="mt-4 text-xs uppercase tracking-wider text-[color:var(--gold-deep)]">Placeholder · content pending</p>
       <div className="mt-auto flex items-center justify-between pt-6">
         <span className="text-xs text-muted-foreground">
           {expert ? `With ${expert.name}` : activity.format === "Retreat" ? "Full detail on Retreats" : "Team-wide"}
