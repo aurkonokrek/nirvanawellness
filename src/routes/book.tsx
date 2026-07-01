@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/book")({
   head: () => ({
