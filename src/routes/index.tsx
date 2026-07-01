@@ -110,7 +110,7 @@ function PillarsTriad() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
       <div className="grid gap-16 lg:grid-cols-[1fr_2fr] lg:gap-24">
-        <div>
+        <Reveal>
           <p className="font-eyebrow text-muted-foreground">Our framework</p>
           <h2 className="mt-4 font-display text-4xl leading-tight md:text-5xl">
             One person, three doorways.
@@ -119,11 +119,12 @@ function PillarsTriad() {
             Real wellbeing rarely lives in one place. We work across all three — with you,
             not around you.
           </p>
-        </div>
+        </Reveal>
         <div className="space-y-10">
           {PILLARS.map((p, i) => (
-            <div
+            <Reveal
               key={p.name}
+              delay={i * 140}
               className="grid grid-cols-[auto_1fr] gap-8 border-t border-border pt-10 first:border-t-0 first:pt-0"
             >
               <span
@@ -136,7 +137,7 @@ function PillarsTriad() {
                 <h3 className="font-display text-3xl">{p.name}</h3>
                 <p className="mt-3 max-w-lg text-muted-foreground">{p.body}</p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
