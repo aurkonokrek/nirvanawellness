@@ -8,7 +8,9 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Facebook, Instagram, Youtube } from "lucide-react";
+import { ChatWidget } from "@/components/ChatWidget";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
@@ -217,6 +219,35 @@ function Footer() {
           <p className="mt-4 max-w-xs text-sm text-[color:var(--sand)]">
             Accessible, holistic psychological care — for mind, body, and soul.
           </p>
+          <div className="mt-6 flex items-center gap-4">
+            <a
+              href="https://www.facebook.com/nirvanawellness.org"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Nirvana Wellness on Facebook"
+              className="text-[color:var(--sand)] transition-colors hover:text-[color:var(--gold-soft)]"
+            >
+              <Facebook className="h-4 w-4" strokeWidth={1.5} />
+            </a>
+            <a
+              href="https://www.instagram.com/nirvana_wellnessofwholeness/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Nirvana Wellness on Instagram"
+              className="text-[color:var(--sand)] transition-colors hover:text-[color:var(--gold-soft)]"
+            >
+              <Instagram className="h-4 w-4" strokeWidth={1.5} />
+            </a>
+            <a
+              href="https://www.youtube.com/@nirvanahealth"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Nirvana Wellness on YouTube"
+              className="text-[color:var(--sand)] transition-colors hover:text-[color:var(--gold-soft)]"
+            >
+              <Youtube className="h-4 w-4" strokeWidth={1.5} />
+            </a>
+          </div>
         </div>
         <FooterCol title="Care">
           <FooterLink to="/approach">Our approach</FooterLink>
@@ -272,6 +303,8 @@ function RootComponent() {
         </main>
         <Footer />
       </div>
+      <ScrollToTop />
+      <ChatWidget />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
