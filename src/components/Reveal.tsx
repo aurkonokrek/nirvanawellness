@@ -63,7 +63,6 @@ export function Reveal({
   return (
     <Tag
       ref={ref as never}
-      data-reveal={shown ? "shown" : mounted ? "hidden" : "ssr"}
       style={style}
       className={
         "transition-[opacity,transform] duration-[900ms] ease-out will-change-transform " +
