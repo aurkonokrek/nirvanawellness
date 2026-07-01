@@ -14,7 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      corporate_inquiries: {
+        Row: {
+          context: string | null
+          created_at: string
+          id: string
+          name: string
+          organisation: string
+          program_interest: string | null
+          role: string | null
+          status: string
+          team_size: string | null
+          work_email: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          organisation: string
+          program_interest?: string | null
+          role?: string | null
+          status?: string
+          team_size?: string | null
+          work_email: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          organisation?: string
+          program_interest?: string | null
+          role?: string | null
+          status?: string
+          team_size?: string | null
+          work_email?: string
+        }
+        Relationships: []
+      }
+      session_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          preferred_format: string
+          session_type: string
+          status: string
+          timezone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          preferred_format: string
+          session_type: string
+          status?: string
+          timezone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          preferred_format?: string
+          session_type?: string
+          status?: string
+          timezone?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
