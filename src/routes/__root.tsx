@@ -12,6 +12,8 @@ import { Menu, X } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import nirvanaLogo from "@/assets/nirvana-logo.png";
+import { FlowerMark } from "@/components/FlowerMark";
 
 const NAV = [
   { to: "/approach", label: "Approach" },
@@ -94,7 +96,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/nirvana-logo.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -123,9 +126,12 @@ function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-        <Link to="/" className="flex items-baseline gap-2" onClick={() => setOpen(false)}>
-          <span className="font-display text-2xl leading-none text-gold-gradient">Nirvana</span>
-          <span className="font-eyebrow text-muted-foreground">Wellness</span>
+        <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)} aria-label="Nirvana Wellness — home">
+          <img src={nirvanaLogo} alt="" width={40} height={40} className="h-10 w-10 object-contain" />
+          <span className="flex items-baseline gap-2">
+            <span className="font-display text-2xl leading-none text-gold-gradient">Nirvana</span>
+            <span className="font-eyebrow text-muted-foreground">Wellness</span>
+          </span>
         </Link>
         <nav className="hidden items-center gap-8 lg:flex">
           {NAV.map((item) => (
@@ -188,9 +194,12 @@ function Footer() {
     <footer className="mt-24 border-t border-border/60 bg-[color:var(--navy)] text-[color:var(--cream)]">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-4 lg:px-10">
         <div className="lg:col-span-1">
-          <div className="flex items-baseline gap-2">
-            <span className="font-display text-2xl text-gold-gradient">Nirvana</span>
-            <span className="font-eyebrow text-[color:var(--sand)]">Wellness</span>
+          <div className="flex items-center gap-3">
+            <img src={nirvanaLogo} alt="" width={44} height={44} className="h-11 w-11 object-contain" />
+            <span className="flex items-baseline gap-2">
+              <span className="font-display text-2xl text-gold-gradient">Nirvana</span>
+              <span className="font-eyebrow text-[color:var(--sand)]">Wellness</span>
+            </span>
           </div>
           <p className="mt-4 max-w-xs text-sm text-[color:var(--sand)]">
             Accessible, holistic psychological care — for mind, body, and soul.
