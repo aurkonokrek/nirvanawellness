@@ -2,8 +2,10 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, MapPin, Clock, Users, Check } from "lucide-react";
 import { FlowerMark } from "@/components/FlowerMark";
 import { ExpertCard } from "@/components/ExpertCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getRetreat } from "@/data/retreats";
 import { getExpert } from "@/data/experts";
+
 
 export const Route = createFileRoute("/retreats/$slug")({
   loader: ({ params }) => {
