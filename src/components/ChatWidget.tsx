@@ -48,7 +48,7 @@ export function ChatWidget() {
             role: "assistant",
             content:
               data.error ??
-              "The assistant couldn't respond just now. You can also reach us at hello@nirvanawellness.org.",
+              "The assistant couldn't respond just now. You can also reach us at nirvanawellness.bd@gmail.com.",
           },
         ]);
       } else {
@@ -62,7 +62,7 @@ export function ChatWidget() {
         ...m,
         {
           role: "assistant",
-          content: "Connection interrupted. Please try again or email hello@nirvanawellness.org.",
+          content: "Connection interrupted. Please try again or email nirvanawellness.bd@gmail.com.",
         },
       ]);
     } finally {

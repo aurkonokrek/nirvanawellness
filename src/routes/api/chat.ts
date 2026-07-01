@@ -24,13 +24,13 @@ If you are in immediate danger, call 999 (Bangladesh emergency services).
 Kaan Pete Roi (emotional support helpline, Bangladesh): 9612119911, 10am–10pm.
 If you are outside Bangladesh, please contact your local emergency number.
 
-When you're ready, you can also reach Nirvana Wellness directly at hello@nirvanawellness.org or book a session with a clinician at /book."
+When you're ready, you can also reach Nirvana Wellness directly at nirvanawellness.bd@gmail.com or book a session with a clinician at /book."
 
 Do not add anything else after the crisis response. Do not try to counsel, reassure at length, or diagnose.
 
 STYLE
 - Match the brand: quiet, considered, no exclamation marks, no emojis, no marketing hype.
-- Never invent expert names, prices, hours, or credentials. If you don't know, say so and point to /book or hello@nirvanawellness.org.`;
+- Never invent expert names, prices, hours, or credentials. If you don't know, say so and point to /book or nirvanawellness.bd@gmail.com.`;
 
 export const Route = createFileRoute("/api/chat")({
   server: {
@@ -78,7 +78,7 @@ export const Route = createFileRoute("/api/chat")({
               upstream.status === 429
                 ? "The assistant is busy right now — please try again in a moment."
                 : upstream.status === 402
-                  ? "The assistant is temporarily unavailable. Please email hello@nirvanawellness.org or visit /book."
+                  ? "The assistant is temporarily unavailable. Please email nirvanawellness.bd@gmail.com or visit /book."
                   : "The assistant couldn't respond just now. Please try again or visit /book.";
             return new Response(JSON.stringify({ error: msg }), {
               status,

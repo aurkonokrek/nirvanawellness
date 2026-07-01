@@ -263,7 +263,7 @@ function Footer() {
         <FooterCol title="Reach us">
           <FooterLink to="/book">Contact & booking</FooterLink>
           <p className="text-sm text-[color:var(--sand)]">Dhaka, Bangladesh</p>
-          <p className="text-sm text-[color:var(--sand)]">hello@nirvanawellness.org</p>
+          <p className="text-sm text-[color:var(--sand)]">nirvanawellness.bd@gmail.com</p>
         </FooterCol>
       </div>
       <div className="border-t border-white/10">
