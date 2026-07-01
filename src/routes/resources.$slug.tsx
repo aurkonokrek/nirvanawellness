@@ -116,6 +116,25 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
           {block.body}
         </aside>
       );
+    case "list": {
+      const ListTag = block.ordered ? "ol" : "ul";
+      return (
+        <ListTag
+          className={
+            (block.ordered
+              ? "list-decimal marker:text-[color:var(--gold-deep)] marker:font-display"
+              : "list-none") +
+            " space-y-3 pl-6 text-[17px] leading-[1.75] text-foreground/85"
+          }
+        >
+          {block.items.map((it, i) => (
+            <li key={i} className={block.ordered ? "pl-1" : "relative pl-4 before:absolute before:left-0 before:top-[0.7em] before:h-1 before:w-1 before:rounded-full before:bg-[color:var(--gold-deep)]"}>
+              {it}
+            </li>
+          ))}
+        </ListTag>
+      );
+    }
     case "audio":
       return (
         <figure className="border border-[color:var(--gold)]/30 p-4">
