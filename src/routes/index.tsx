@@ -3,9 +3,10 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import heroSanctuary from "@/assets/hero-sanctuary.jpg";
 import founderSumaia from "@/assets/founder-sumaia.jpg";
-import retreatLake from "@/assets/retreat-lake.jpg";
+import retreatTeam from "@/assets/retreat-team.jpg";
 import journalFlatlay from "@/assets/journal-flatlay.jpg";
 import corporateCircle from "@/assets/corporate-circle.jpg";
+import { FlowerMark } from "@/components/FlowerMark";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -16,12 +17,23 @@ function Home() {
     <div>
       <Hero />
       <PillarsTriad />
+      <MarkDivider />
       <FounderBand />
       <CorporateBand />
       <ExpatStrip />
       <RetreatsPreview />
       <JournalPreview />
       <ClosingBand />
+    </div>
+  );
+}
+
+function MarkDivider() {
+  return (
+    <div aria-hidden="true" className="flex items-center justify-center gap-6 pb-4">
+      <span className="h-px w-24 bg-border" />
+      <FlowerMark className="h-8 w-8 text-[color:var(--gold)] opacity-40" />
+      <span className="h-px w-24 bg-border" />
     </div>
   );
 }
@@ -260,10 +272,10 @@ function RetreatsPreview() {
         </div>
         <div className="relative aspect-[16/10] overflow-hidden">
           <img
-            src={retreatLake}
-            alt="Wooden pavilion at the edge of a still lake at dawn"
+            src={retreatTeam}
+            alt="A small team gathered in conversation on a wooden deck at a wellness retreat"
             width={1600}
-            height={960}
+            height={1000}
             loading="lazy"
             className="h-full w-full object-cover"
           />

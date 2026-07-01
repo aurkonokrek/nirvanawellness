@@ -13,7 +13,6 @@ import { Menu, X } from "lucide-react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import nirvanaLogo from "@/assets/nirvana-logo.png";
-import { FlowerMark } from "@/components/FlowerMark";
 
 const NAV = [
   { to: "/approach", label: "Approach" },
