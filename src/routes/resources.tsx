@@ -95,7 +95,9 @@ function ArticleCard({ resource }: { resource: Resource }) {
       className="group flex flex-col overflow-hidden rounded-none border border-[color:var(--gold)]/30 bg-[#FAFAFA] p-6 transition-colors hover:border-[color:var(--gold-deep)]"
     >
       <p className="font-eyebrow text-[10px] tracking-[0.22em] text-[color:var(--gold-deep)]">
-        {resource.track} · Illustrative
+        {resource.track}
+        {resource.category ? ` · ${resource.category}` : ""}
+        {resource.isPlaceholder ? " · Illustrative" : ""}
       </p>
       <p className="mt-4 font-display text-2xl leading-tight text-[color:var(--navy)] transition-colors group-hover:text-[color:var(--gold-deep)]">
         {resource.title}
