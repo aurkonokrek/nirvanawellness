@@ -73,9 +73,9 @@ const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   getParentRoute: () => ResourcesRoute,
 } as any)
 const ExpertsSlugRoute = ExpertsSlugRouteImport.update({
-  id: '/experts/$slug',
-  path: '/experts/$slug',
-  getParentRoute: () => rootRouteImport,
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ExpertsRoute,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
@@ -180,7 +180,6 @@ export interface RootRouteChildren {
   ResourcesRoute: typeof ResourcesRouteWithChildren
   RetreatsRoute: typeof RetreatsRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
-  ExpertsSlugRoute: typeof ExpertsSlugRoute
   ExpertsIndexRoute: typeof ExpertsIndexRoute
 }
 
@@ -258,10 +257,10 @@ declare module '@tanstack/react-router' {
     }
     '/experts/$slug': {
       id: '/experts/$slug'
-      path: '/experts/$slug'
+      path: '/$slug'
       fullPath: '/experts/$slug'
       preLoaderRoute: typeof ExpertsSlugRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ExpertsRoute
     }
     '/api/chat': {
       id: '/api/chat'
@@ -306,9 +305,18 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesRoute: ResourcesRouteWithChildren,
   RetreatsRoute: RetreatsRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
-  ExpertsSlugRoute: ExpertsSlugRoute,
   ExpertsIndexRoute: ExpertsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
