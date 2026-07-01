@@ -37,7 +37,9 @@ function ResourceArticlePage() {
       <section className="border-b border-border">
         <div className="mx-auto max-w-3xl px-6 pb-14 pt-24 lg:pt-32">
           <p className="font-eyebrow text-[color:var(--gold-deep)]">
-            {resource.track} · Illustrative
+            {resource.track}
+            {resource.category ? ` · ${resource.category}` : ""}
+            {resource.isPlaceholder ? " · Illustrative" : ""}
           </p>
           <h1 className="mt-5 font-display text-4xl leading-[1.1] md:text-5xl">
             {resource.title}
