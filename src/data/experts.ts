@@ -34,6 +34,7 @@ export const EXPERTS: Expert[] = [
     bio: [
       "Founder of Nirvana. Counselor Psychologist and certified Life Coach, and a Corporate Trainer, with 8 years of experience. Her practice is built around a holistic wellness-coaching approach.",
     ],
+    experience: "8 years",
     credentials: [
       "Counselor Psychologist",
       "Certified Life Coach",
