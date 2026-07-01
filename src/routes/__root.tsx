@@ -189,20 +189,43 @@ function Header() {
       {open && (
         <div className="border-t border-border/60 bg-background lg:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-4">
-            {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted"
-                activeProps={{
-                  className:
-                    "rounded-md px-2 py-2 text-sm text-[color:var(--navy)] font-medium bg-[color:var(--gold-soft)]/25",
-                }}
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {NAV.map((item) =>
+              "children" in item ? (
+                <div key={item.label} className="mt-1">
+                  <p className="px-2 pb-1 pt-2 font-eyebrow text-[10px] tracking-[0.22em] text-muted-foreground">
+                    {item.label}
+                  </p>
+                  {item.children.map((c, i) => (
+                    <Link
+                      key={`${c.label}-${i}`}
+                      to={c.to}
+                      className="block rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted"
+                      activeProps={{
+                        className:
+                          "block rounded-md px-2 py-2 text-sm text-[color:var(--navy)] font-medium bg-[color:var(--gold-soft)]/25",
+                      }}
+                      activeOptions={{ exact: true }}
+                      onClick={() => setOpen(false)}
+                    >
+                      {c.label}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted"
+                  activeProps={{
+                    className:
+                      "rounded-md px-2 py-2 text-sm text-[color:var(--navy)] font-medium bg-[color:var(--gold-soft)]/25",
+                  }}
+                  onClick={() => setOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
 
             <Link
               to="/book"
