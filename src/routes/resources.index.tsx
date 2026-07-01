@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { RESOURCES, RESOURCE_TRACKS, type Resource } from "@/data/resources";
 import { getExpert } from "@/data/experts";
 
-export const Route = createFileRoute("/resources")({
+export const Route = createFileRoute("/resources/")({
   head: () => ({
     meta: [
       { title: "Journal & Creative Creations · Nirvana Wellness" },
