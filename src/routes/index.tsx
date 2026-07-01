@@ -7,6 +7,8 @@ import retreatTeam from "@/assets/retreat-team.jpg";
 import journalFlatlay from "@/assets/journal-flatlay.jpg";
 import corporateCircle from "@/assets/corporate-circle.jpg";
 import { FlowerMark } from "@/components/FlowerMark";
+import { ParallaxImage } from "@/components/ParallaxImage";
+
 
 export const Route = createFileRoute("/")({
   component: Home,
