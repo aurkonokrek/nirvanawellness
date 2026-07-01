@@ -1,13 +1,10 @@
-// Tests & Games — sample content, clearly illustrative.
-// Question sets and game concepts aren't finalized yet; these three exist so the
-// index + detail routing scales without rework when real content lands.
+// Tests & Games — titles, types, and themes are final and align with the
+// Mind / Body / Soul + 8-dimension framework. The actual question sets and
+// game mechanics below are illustrative placeholders — real content will
+// replace them without changes to the routing or index structure.
 
 export type TestType = "Test" | "Game";
-export type TestTheme =
-  | "Stress & burnout"
-  | "Sleep"
-  | "Relationships"
-  | "Grounding";
+export type TestTheme = "Mind" | "Mind / Body" | "Communication";
 
 export type Choice = {
   label: string;
@@ -54,10 +51,10 @@ export const TESTS: TestItem[] = [
   {
     slug: "stress-check-in",
     type: "Test",
-    theme: "Stress & burnout",
-    title: "A five-minute stress check-in",
-    dek: "A short reflection on how the last two weeks have actually felt — not a diagnosis, a starting point.",
-    minutes: 5,
+    theme: "Mind",
+    title: "Stress Check-In",
+    dek: "A short screener on your current stress load. Not a diagnosis — a starting point for a conversation with a real clinician.",
+    minutes: 3,
     recommendedExpertSlug: "sumaia-azmi",
     isPlaceholder: true,
     questions: [
@@ -102,13 +99,13 @@ export const TESTS: TestItem[] = [
         min: 0,
         title: "Steady, with edges",
         reflection:
-          "The last two weeks sound manageable. If anything from the questions surfaced something you'd like to talk through, a single session can be a useful mirror — not a commitment to ongoing care.",
+          "The last two weeks sound manageable. If anything surfaced that you'd like to talk through, a single session can be a useful mirror — not a commitment to ongoing care.",
       },
       {
         min: 4,
         title: "Carrying more than usual",
         reflection:
-          "There's a real weight showing up. Naming it with someone trained to hold it — even once — often shifts how the next week lands.",
+          "There's real weight showing up. Naming it with someone trained to hold it — even once — often shifts how the next week lands.",
       },
       {
         min: 7,
@@ -119,128 +116,156 @@ export const TESTS: TestItem[] = [
     ],
   },
   {
-    slug: "sleep-signals",
+    slug: "burnout-signals",
     type: "Test",
-    theme: "Sleep",
-    title: "Sleep signals — what your nights are telling you",
-    dek: "A short reflection on the shape of your sleep — not a diagnosis, a nudge to notice patterns.",
-    minutes: 4,
-    recommendedExpertSlug: "stanislas-ll",
+    theme: "Mind / Body",
+    title: "Burnout Signals",
+    dek: "A closer look at early burnout patterns — energy, cynicism, detachment. Not a diagnosis, a nudge to notice what's been building.",
+    minutes: 5,
+    recommendedExpertSlug: "sumaia-azmi",
     isPlaceholder: true,
     questions: [
       {
-        prompt: "How long does it usually take you to fall asleep?",
-        choices: [
-          { label: "Under 20 minutes", score: 0 },
-          { label: "20–45 minutes", score: 1 },
-          { label: "Often over an hour", score: 2 },
-        ],
-      },
-      {
-        prompt: "Do you wake in the night and struggle to return to sleep?",
+        prompt: "How often do you wake up already tired?",
         choices: [
           { label: "Rarely", score: 0 },
-          { label: "A few nights a week", score: 1 },
-          { label: "Most nights", score: 2 },
+          { label: "A few mornings a week", score: 1 },
+          { label: "Most mornings", score: 2 },
+          { label: "Every morning", score: 3 },
         ],
       },
       {
-        prompt: "How do you feel on waking?",
+        prompt: "How connected do you feel to the work or role you're in?",
         choices: [
-          { label: "Reasonably rested", score: 0 },
-          { label: "Groggy but functional", score: 1 },
-          { label: "Exhausted before the day starts", score: 2 },
+          { label: "Still meaningful", score: 0 },
+          { label: "Going through the motions some days", score: 1 },
+          { label: "Detached more often than not", score: 2 },
+          { label: "It feels hollow", score: 3 },
         ],
       },
       {
-        prompt: "Are you using anything to sleep (medication, alcohol) more often than you'd like?",
+        prompt: "How often are you cynical or short with people you usually care about?",
+        choices: [
+          { label: "Not really", score: 0 },
+          { label: "Sometimes", score: 1 },
+          { label: "Frequently", score: 2 },
+          { label: "Nearly always", score: 3 },
+        ],
+      },
+      {
+        prompt: "What happens in your body at the end of a normal day?",
+        choices: [
+          { label: "Tired but okay", score: 0 },
+          { label: "Tension I can shake off", score: 1 },
+          { label: "Tension I carry into the next day", score: 2 },
+          { label: "Fully depleted, physically", score: 3 },
+        ],
+      },
+      {
+        prompt: "Are you having thoughts of harming yourself, or that you don't want to be here?",
         choices: [
           { label: "No", score: 0 },
-          { label: "Occasionally", score: 1 },
-          { label: "Regularly, and it worries me", score: 3, crisis: true },
+          { label: "Occasional passing thoughts", score: 1 },
+          CRISIS,
         ],
       },
     ],
     bands: [
       {
         min: 0,
-        title: "Mostly restorative",
+        title: "Not burnout — but worth watching",
         reflection:
-          "Your nights sound relatively steady. If a specific pattern keeps recurring, a single sleep-focused conversation is often enough to name it.",
+          "Signals are mild. Small recalibrations — sleep, boundaries, a single check-in — often keep it from progressing.",
       },
       {
-        min: 3,
-        title: "Interrupted",
+        min: 5,
+        title: "Warning lights are on",
         reflection:
-          "Sleep is doing some of the work, but not enough. A body-based practice or a short block of focused sessions is often where this softens.",
+          "The pattern points to real strain. Working with someone on both the mind and body sides — talk plus somatic — tends to be more effective than either alone at this stage.",
       },
       {
-        min: 6,
-        title: "Depleting",
+        min: 9,
+        title: "Deep in it",
         reflection:
-          "This much disruption compounds. Care that includes the body — breath, somatics — alongside conversation tends to move this fastest.",
+          "This much depletion doesn't reverse on willpower. A structured stretch of care is often what actually shifts it. A first conversation is a small first step.",
       },
     ],
   },
   {
-    slug: "grounding-game",
+    slug: "are-you-listening",
     type: "Game",
-    theme: "Grounding",
-    title: "A grounding game for the middle of a hard moment",
-    dek: "A guided five-step sequence borrowed from somatic practice. Not a diagnosis — a pocket tool.",
-    minutes: 3,
+    theme: "Communication",
+    title: "Are You Listening?",
+    dek: "A scenario-based exercise on how you actually respond when someone opens up. Not a diagnosis — a mirror for communication patterns.",
+    minutes: 4,
     recommendedExpertSlug: "sanjida-afroz",
     isPlaceholder: true,
     questions: [
       {
-        prompt: "Name five things you can see right now.",
+        prompt:
+          "A partner or friend says, \"I had a really hard day.\" What's your first move?",
         choices: [
-          { label: "Done — moving on", score: 0 },
-          { label: "Skip this step", score: 0 },
+          { label: "Ask what happened, then listen", score: 0 },
+          { label: "Offer a solution to fix the situation", score: 2 },
+          { label: "Share a similar story from your own day", score: 1 },
+          { label: "Change the subject to lighten the mood", score: 3 },
         ],
       },
       {
-        prompt: "Name four things you can physically feel — the chair, your feet, fabric.",
+        prompt:
+          "They keep talking, and it's clear they don't want advice. You notice yourself:",
         choices: [
-          { label: "Done", score: 0 },
-          { label: "Skip", score: 0 },
+          { label: "Staying with them, quiet, present", score: 0 },
+          { label: "Planning what to say next", score: 2 },
+          { label: "Getting slightly impatient", score: 3 },
+          { label: "Reflecting back what you heard", score: 0 },
         ],
       },
       {
-        prompt: "Name three things you can hear.",
+        prompt: "They start to cry. Your instinct is to:",
         choices: [
-          { label: "Done", score: 0 },
-          { label: "Skip", score: 0 },
+          { label: "Sit with them without rushing to soothe", score: 0 },
+          { label: "Immediately reassure them it'll be fine", score: 2 },
+          { label: "Look for something practical to do", score: 2 },
+          { label: "Feel awkward and want to change the topic", score: 3 },
         ],
       },
       {
-        prompt: "Name two things you can smell — or two smells you like.",
+        prompt: "When the conversation ends, you notice:",
         choices: [
-          { label: "Done", score: 0 },
-          { label: "Skip", score: 0 },
+          { label: "They seem lighter than when it started", score: 0 },
+          { label: "You gave good advice but they still seem heavy", score: 2 },
+          { label: "You're not sure what they actually needed", score: 2 },
+          { label: "You feel relief that it's over", score: 3 },
         ],
       },
       {
-        prompt: "Name one thing you can taste — or one taste you'd like right now.",
+        prompt:
+          "Something they said suggests they might be a danger to themselves. What do you do?",
         choices: [
-          { label: "Done", score: 0 },
-          { label: "Skip", score: 0 },
-        ],
-      },
-      {
-        prompt: "Right now, in this moment, are you safe?",
-        choices: [
-          { label: "Yes", score: 0 },
-          { label: "I'm not sure — I need support", score: 3, crisis: true },
+          { label: "Ask directly and stay with them", score: 0 },
+          { label: "I'm not sure — I need support with this", score: 3, crisis: true },
         ],
       },
     ],
     bands: [
       {
         min: 0,
-        title: "You made it through the sequence.",
+        title: "Present, and it shows",
         reflection:
-          "Grounding practices are small on their own and cumulative over time. If moments like this are recurring, working with a practitioner on a wider toolkit is often the next step.",
+          "Your instincts skew toward staying with people rather than fixing them. That's the harder part of listening. Small refinements — pacing, silence, reflecting back — are where couples and communication work often go next.",
+      },
+      {
+        min: 4,
+        title: "Kind, but reaching for fixes",
+        reflection:
+          "You care, and it shows up as solutions. That's not wrong — it's just a different skill than listening. A short block of communication-focused work often changes how much heavier conversations land.",
+      },
+      {
+        min: 8,
+        title: "Discomfort with hard moments",
+        reflection:
+          "Hard conversations pull you toward exits — advice, subject changes, relief when it's over. That's very common and very workable. Communication-focused sessions, individually or as a couple, are the direct route.",
       },
     ],
   },
@@ -249,10 +274,9 @@ export const TESTS: TestItem[] = [
 export const TEST_TYPES: ("All" | TestType)[] = ["All", "Test", "Game"];
 export const TEST_THEMES: ("All" | TestTheme)[] = [
   "All",
-  "Stress & burnout",
-  "Sleep",
-  "Relationships",
-  "Grounding",
+  "Mind",
+  "Mind / Body",
+  "Communication",
 ];
 
 export function getTest(slug: string) {
