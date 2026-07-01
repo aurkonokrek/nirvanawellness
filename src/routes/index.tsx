@@ -8,6 +8,7 @@ import journalFlatlay from "@/assets/journal-flatlay.jpg";
 import corporateCircle from "@/assets/corporate-circle.jpg";
 import { FlowerMark } from "@/components/FlowerMark";
 import { ParallaxImage } from "@/components/ParallaxImage";
+import { Reveal } from "@/components/Reveal";
 
 
 export const Route = createFileRoute("/")({
@@ -109,7 +110,7 @@ function PillarsTriad() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
       <div className="grid gap-16 lg:grid-cols-[1fr_2fr] lg:gap-24">
-        <div>
+        <Reveal>
           <p className="font-eyebrow text-muted-foreground">Our framework</p>
           <h2 className="mt-4 font-display text-4xl leading-tight md:text-5xl">
             One person, three doorways.
@@ -118,11 +119,12 @@ function PillarsTriad() {
             Real wellbeing rarely lives in one place. We work across all three — with you,
             not around you.
           </p>
-        </div>
+        </Reveal>
         <div className="space-y-10">
           {PILLARS.map((p, i) => (
-            <div
+            <Reveal
               key={p.name}
+              delay={i * 140}
               className="grid grid-cols-[auto_1fr] gap-8 border-t border-border pt-10 first:border-t-0 first:pt-0"
             >
               <span
@@ -135,7 +137,7 @@ function PillarsTriad() {
                 <h3 className="font-display text-3xl">{p.name}</h3>
                 <p className="mt-3 max-w-lg text-muted-foreground">{p.body}</p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -146,41 +148,47 @@ function PillarsTriad() {
 /* ---------- 3. Founder band (Sumaia — mission, not booking) ---------- */
 function FounderBand() {
   return (
-    <section className="bg-[color:var(--navy)] text-[color:var(--cream)]">
+    <section className="relative isolate overflow-hidden bg-[color:var(--navy)] text-[color:var(--cream)]">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-32">
-        <div className="relative aspect-[4/5] overflow-hidden lg:aspect-auto">
-          <img
+        <Reveal className="relative aspect-[4/5] overflow-hidden lg:aspect-auto">
+          <ParallaxImage
             src={founderSumaia}
             alt="Sumaia Azmi, founder of Nirvana Wellness"
-            width={1024}
-            height={1280}
-            loading="lazy"
-            className="h-full w-full object-cover"
+            strength={0.18}
           />
-        </div>
+        </Reveal>
         <div className="flex flex-col justify-center">
-          <p className="font-eyebrow text-[color:var(--gold-soft)]">Founder's note</p>
-          <h2 className="mt-4 font-display text-4xl leading-tight md:text-5xl">
-            "Care shouldn't feel like a favour."
-          </h2>
-          <p className="mt-6 text-lg text-[color:var(--sand)]">
-            Nirvana began with a simple frustration: psychological support in this part of the world
-            is still treated as a luxury or a last resort. I wanted a place where it feels ordinary
-            to walk in — for a hard week, a difficult season, or a longer question you've been
-            carrying quietly.
-          </p>
-          <p className="mt-4 text-[color:var(--sand)]">
-            — Sumaia Azmi, Founder & Clinical Director
-          </p>
-          <div className="mt-8">
-            <Link
-              to="/experts"
-              className="group inline-flex items-center gap-2 text-sm text-[color:var(--gold-soft)] hover:text-[color:var(--gold)]"
-            >
-              Read Sumaia's full profile & book with her
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </Link>
-          </div>
+          <Reveal>
+            <p className="font-eyebrow text-[color:var(--gold-soft)]">Founder's note</p>
+          </Reveal>
+          <Reveal delay={120}>
+            <h2 className="mt-4 font-display text-4xl leading-tight md:text-5xl">
+              "Care shouldn't feel like a favour."
+            </h2>
+          </Reveal>
+          <Reveal delay={220}>
+            <p className="mt-6 text-lg text-[color:var(--sand)]">
+              Nirvana began with a simple frustration: psychological support in this part of the world
+              is still treated as a luxury or a last resort. I wanted a place where it feels ordinary
+              to walk in — for a hard week, a difficult season, or a longer question you've been
+              carrying quietly.
+            </p>
+            <p className="mt-4 text-[color:var(--sand)]">
+              — Sumaia Azmi, Founder & Clinical Director
+            </p>
+          </Reveal>
+          <Reveal delay={320}>
+            <div className="mt-8">
+              <Link
+                to="/experts/$slug"
+                params={{ slug: "sumaia-azmi" }}
+                className="group inline-flex items-center gap-2 text-sm text-[color:var(--gold-soft)] hover:text-[color:var(--gold)]"
+              >
+                Read Sumaia's full profile & book with her
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
