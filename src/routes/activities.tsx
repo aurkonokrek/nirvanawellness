@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowUpRight, Clock, Repeat } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { ACTIVITIES, ACTIVITY_FILTERS, type Activity } from "@/data/activities";
 import { getExpert } from "@/data/experts";
