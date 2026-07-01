@@ -11,12 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RetreatsRouteImport } from './routes/retreats'
 import { Route as ResourcesRouteImport } from './routes/resources'
-import { Route as ExpertsRouteImport } from './routes/experts'
 import { Route as CorporateRouteImport } from './routes/corporate'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as ApproachRouteImport } from './routes/approach'
 import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ExpertsIndexRouteImport } from './routes/experts.index'
 import { Route as RetreatsSlugRouteImport } from './routes/retreats.$slug'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
@@ -30,11 +30,6 @@ const RetreatsRoute = RetreatsRouteImport.update({
 const ResourcesRoute = ResourcesRouteImport.update({
   id: '/resources',
   path: '/resources',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExpertsRoute = ExpertsRouteImport.update({
-  id: '/experts',
-  path: '/experts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CorporateRoute = CorporateRouteImport.update({
@@ -62,6 +57,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExpertsIndexRoute = ExpertsIndexRouteImport.update({
+  id: '/experts/',
+  path: '/experts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RetreatsSlugRoute = RetreatsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -73,9 +73,9 @@ const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   getParentRoute: () => ResourcesRoute,
 } as any)
 const ExpertsSlugRoute = ExpertsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ExpertsRoute,
+  id: '/experts/$slug',
+  path: '/experts/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
@@ -89,13 +89,13 @@ export interface FileRoutesByFullPath {
   '/approach': typeof ApproachRoute
   '/book': typeof BookRoute
   '/corporate': typeof CorporateRoute
-  '/experts': typeof ExpertsRouteWithChildren
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
+  '/experts/': typeof ExpertsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -103,13 +103,13 @@ export interface FileRoutesByTo {
   '/approach': typeof ApproachRoute
   '/book': typeof BookRoute
   '/corporate': typeof CorporateRoute
-  '/experts': typeof ExpertsRouteWithChildren
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
+  '/experts': typeof ExpertsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -118,13 +118,13 @@ export interface FileRoutesById {
   '/approach': typeof ApproachRoute
   '/book': typeof BookRoute
   '/corporate': typeof CorporateRoute
-  '/experts': typeof ExpertsRouteWithChildren
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
+  '/experts/': typeof ExpertsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -134,13 +134,13 @@ export interface FileRouteTypes {
     | '/approach'
     | '/book'
     | '/corporate'
-    | '/experts'
     | '/resources'
     | '/retreats'
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/retreats/$slug'
+    | '/experts/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -148,13 +148,13 @@ export interface FileRouteTypes {
     | '/approach'
     | '/book'
     | '/corporate'
-    | '/experts'
     | '/resources'
     | '/retreats'
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/retreats/$slug'
+    | '/experts'
   id:
     | '__root__'
     | '/'
@@ -162,13 +162,13 @@ export interface FileRouteTypes {
     | '/approach'
     | '/book'
     | '/corporate'
-    | '/experts'
     | '/resources'
     | '/retreats'
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/retreats/$slug'
+    | '/experts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -177,10 +177,11 @@ export interface RootRouteChildren {
   ApproachRoute: typeof ApproachRoute
   BookRoute: typeof BookRoute
   CorporateRoute: typeof CorporateRoute
-  ExpertsRoute: typeof ExpertsRouteWithChildren
   ResourcesRoute: typeof ResourcesRouteWithChildren
   RetreatsRoute: typeof RetreatsRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
+  ExpertsSlugRoute: typeof ExpertsSlugRoute
+  ExpertsIndexRoute: typeof ExpertsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -197,13 +198,6 @@ declare module '@tanstack/react-router' {
       path: '/resources'
       fullPath: '/resources'
       preLoaderRoute: typeof ResourcesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/experts': {
-      id: '/experts'
-      path: '/experts'
-      fullPath: '/experts'
-      preLoaderRoute: typeof ExpertsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/corporate': {
@@ -241,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/experts/': {
+      id: '/experts/'
+      path: '/experts'
+      fullPath: '/experts/'
+      preLoaderRoute: typeof ExpertsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/retreats/$slug': {
       id: '/retreats/$slug'
       path: '/$slug'
@@ -257,10 +258,10 @@ declare module '@tanstack/react-router' {
     }
     '/experts/$slug': {
       id: '/experts/$slug'
-      path: '/$slug'
+      path: '/experts/$slug'
       fullPath: '/experts/$slug'
       preLoaderRoute: typeof ExpertsSlugRouteImport
-      parentRoute: typeof ExpertsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
       id: '/api/chat'
@@ -271,17 +272,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface ExpertsRouteChildren {
-  ExpertsSlugRoute: typeof ExpertsSlugRoute
-}
-
-const ExpertsRouteChildren: ExpertsRouteChildren = {
-  ExpertsSlugRoute: ExpertsSlugRoute,
-}
-
-const ExpertsRouteWithChildren =
-  ExpertsRoute._addFileChildren(ExpertsRouteChildren)
 
 interface ResourcesRouteChildren {
   ResourcesSlugRoute: typeof ResourcesSlugRoute
@@ -313,10 +303,11 @@ const rootRouteChildren: RootRouteChildren = {
   ApproachRoute: ApproachRoute,
   BookRoute: BookRoute,
   CorporateRoute: CorporateRoute,
-  ExpertsRoute: ExpertsRouteWithChildren,
   ResourcesRoute: ResourcesRouteWithChildren,
   RetreatsRoute: RetreatsRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
+  ExpertsSlugRoute: ExpertsSlugRoute,
+  ExpertsIndexRoute: ExpertsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

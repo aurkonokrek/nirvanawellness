@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { ExpertCard } from "@/components/ExpertCard";
 import { EXPERTS, EXPERT_FILTERS } from "@/data/experts";
 
-export const Route = createFileRoute("/experts")({
+export const Route = createFileRoute("/experts/")({
   head: () => ({
     meta: [
       { title: "Meet the Experts · Nirvana Wellness" },
