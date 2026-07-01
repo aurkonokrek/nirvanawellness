@@ -82,6 +82,11 @@ export const EXPERTS: Expert[] = [
       "Consultant Psychologist, registered with the UK Health and Care Professions Council and an Associate Fellow of the British Psychological Society. Holds a doctorate in psychology and a master's degree in stress management. Approximately 20 years of experience.",
       "His career began in the UK Royal Air Force. He was central to bringing Mental Health First Aid (MHFA) to Bangladesh in 2015 and has worked with the Acid Survivors Foundation in Dhaka.",
     ],
+    experience: "~20 years",
+    education: [
+      "Doctorate in Psychology",
+      "Master's in Stress Management",
+    ],
     credentials: [
       "Doctorate in Psychology",
       "Master's in Stress Management",
