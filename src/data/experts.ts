@@ -53,6 +53,11 @@ export const EXPERTS: Expert[] = [
     bio: [
       "Psychotherapist, Certified NLP Master Practitioner, and Family & Couple Therapist. Clinical Counselor at Bangladesh University of Engineering and Technology (BUET). More than 10 years of experience in the field.",
     ],
+    experience: "10+ years",
+    education: [
+      "B.Sc & M.Sc in Psychology — Dhaka University",
+      "M.Sc in Counseling Psychology — Dhaka University",
+    ],
     credentials: [
       "B.Sc & M.Sc in Psychology — Dhaka University",
       "M.Sc in Counseling Psychology — Dhaka University",
