@@ -61,8 +61,12 @@ function ExpertProfilePage() {
               </blockquote>
             )}
             <div className="mt-8 flex flex-wrap gap-4 text-sm text-[color:var(--sand)]">
-              <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4" />{expert.location}</span>
-              <span className="inline-flex items-center gap-1.5"><Languages className="h-4 w-4" />{expert.languages.join(", ")}</span>
+              {expert.location && (
+                <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4" />{expert.location}</span>
+              )}
+              {expert.languages && expert.languages.length > 0 && (
+                <span className="inline-flex items-center gap-1.5"><Languages className="h-4 w-4" />{expert.languages.join(", ")}</span>
+              )}
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
