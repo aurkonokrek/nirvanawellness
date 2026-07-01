@@ -69,16 +69,19 @@ function RetreatDetailPage() {
         </div>
       </section>
 
-      {/* Placeholder flag */}
-      <section className="mx-auto max-w-7xl px-6 pt-10 lg:px-10">
-        <div className="rounded-md border border-[color:var(--gold-deep)]/40 bg-[color:var(--gold-soft)]/15 px-4 py-3 text-sm text-foreground/80">
-          <strong className="font-medium text-[color:var(--navy)]">
-            Illustrative content.
-          </strong>{" "}
-          The itinerary, duration, and logistics below are examples — real
-          retreats are designed to your team in a discovery call.
-        </div>
-      </section>
+      {/* Placeholder flag — only for entries whose content is still pending */}
+      {retreat.isPlaceholder && (
+        <section className="mx-auto max-w-7xl px-6 pt-10 lg:px-10">
+          <div className="rounded-md border border-[color:var(--gold-deep)]/40 bg-[color:var(--gold-soft)]/15 px-4 py-3 text-sm text-foreground/80">
+            <strong className="font-medium text-[color:var(--navy)]">
+              Illustrative content.
+            </strong>{" "}
+            Real program details are pending. Nothing on this page describes a
+            specific bookable offering yet.
+          </div>
+        </section>
+      )}
+
 
       {/* Overview + logistics sidebar */}
       <section className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
