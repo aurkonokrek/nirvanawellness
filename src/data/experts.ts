@@ -18,8 +18,6 @@ export type Expert = {
   quote?: string;
   approach?: string[];
   specialties?: string[];
-  experience?: string; // e.g. "10+ years"
-  education?: string[]; // degrees / academic training only
 };
 
 export const EXPERTS: Expert[] = [
@@ -34,7 +32,6 @@ export const EXPERTS: Expert[] = [
     bio: [
       "Founder of Nirvana. Counselor Psychologist and certified Life Coach, and a Corporate Trainer, with 8 years of experience. Her practice is built around a holistic wellness-coaching approach.",
     ],
-    experience: "8 years",
     credentials: [
       "Counselor Psychologist",
       "Certified Life Coach",
@@ -52,11 +49,6 @@ export const EXPERTS: Expert[] = [
       "Psychotherapist with 10+ years of experience. Clinical Counselor at BUET.",
     bio: [
       "Psychotherapist, Certified NLP Master Practitioner, and Family & Couple Therapist. Clinical Counselor at Bangladesh University of Engineering and Technology (BUET). More than 10 years of experience in the field.",
-    ],
-    experience: "10+ years",
-    education: [
-      "B.Sc & M.Sc in Psychology — Dhaka University",
-      "M.Sc in Counseling Psychology — Dhaka University",
     ],
     credentials: [
       "B.Sc & M.Sc in Psychology — Dhaka University",
@@ -82,11 +74,6 @@ export const EXPERTS: Expert[] = [
       "Consultant Psychologist, registered with the UK Health and Care Professions Council and an Associate Fellow of the British Psychological Society. Holds a doctorate in psychology and a master's degree in stress management. Approximately 20 years of experience.",
       "His career began in the UK Royal Air Force. He was central to bringing Mental Health First Aid (MHFA) to Bangladesh in 2015 and has worked with the Acid Survivors Foundation in Dhaka.",
     ],
-    experience: "~20 years",
-    education: [
-      "Doctorate in Psychology",
-      "Master's in Stress Management",
-    ],
     credentials: [
       "Doctorate in Psychology",
       "Master's in Stress Management",
@@ -110,8 +97,6 @@ export const EXPERTS: Expert[] = [
       "French diplomat. Served several years at the Crisis Center in Paris and has been posted in China, India, Turkey, Slovakia, and Bangladesh. Holds a Master's degree in Law and Economy, and has been certified in Mindfulness and Heartfulness meditation for the past 20 years.",
       "Closely associated with the Heartfulness Institute.",
     ],
-    experience: "20 years",
-    education: ["Master's — Law and Economy"],
     credentials: [
       "20 years — certified in Mindfulness & Heartfulness meditation",
       "Master's — Law and Economy",
