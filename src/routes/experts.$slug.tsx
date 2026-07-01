@@ -38,7 +38,7 @@ function initials(name: string) {
 }
 
 function ExpertProfilePage() {
-  const { expert } = Route.useLoaderData();
+  const { expert } = Route.useLoaderData() as { expert: import("@/data/experts").Expert };
   const related = EXPERTS.filter(
     (e) => e.slug !== expert.slug && e.pillars.some((p) => expert.pillars.includes(p)),
   ).slice(0, 3);
