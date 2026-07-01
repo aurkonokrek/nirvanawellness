@@ -242,6 +242,82 @@ function Header() {
   );
 }
 
+function NavDropdown({
+  item,
+}: {
+  item: { label: string; children: { to: string; label: string }[] };
+}) {
+  const [open, setOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isActive = item.children.some(
+    (c) => pathname === c.to || pathname.startsWith(c.to + "/"),
+  );
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="true"
+        aria-expanded={open}
+        className={
+          "group relative inline-flex items-center gap-1 py-1 text-sm transition-colors hover:text-foreground " +
+          (isActive
+            ? "font-medium text-[color:var(--navy)]"
+            : "text-foreground/70")
+        }
+      >
+        {item.label}
+        <ChevronDown
+          className={
+            "h-3.5 w-3.5 transition-transform " + (open ? "rotate-180" : "")
+          }
+          aria-hidden="true"
+        />
+        <span
+          aria-hidden="true"
+          className={
+            "pointer-events-none absolute inset-x-0 -bottom-0.5 h-[2px] bg-gold-gradient transition-transform duration-300 origin-left " +
+            (isActive
+              ? "scale-x-100"
+              : "scale-x-0 group-hover:scale-x-100")
+          }
+        />
+      </button>
+
+      {open && (
+        <div className="absolute left-1/2 top-full z-50 pt-3 -translate-x-1/2">
+          <div className="min-w-[220px] rounded-md border border-border bg-background/95 py-2 shadow-lg backdrop-blur">
+            {item.children.map((c, i) => {
+              const active =
+                pathname === c.to || pathname.startsWith(c.to + "/");
+              return (
+                <Link
+                  key={`${c.label}-${i}`}
+                  to={c.to}
+                  onClick={() => setOpen(false)}
+                  className={
+                    "block px-4 py-2 text-sm transition-colors " +
+                    (active
+                      ? "bg-[color:var(--gold-soft)]/25 text-[color:var(--navy)] font-medium"
+                      : "text-foreground/80 hover:bg-muted")
+                  }
+                >
+                  {c.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Footer() {
   return (
     <footer className="mt-24 border-t border-border/60 bg-[color:var(--navy)] text-[color:var(--cream)]">
