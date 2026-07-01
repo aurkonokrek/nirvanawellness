@@ -73,9 +73,9 @@ const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   getParentRoute: () => ResourcesRoute,
 } as any)
 const ExpertsSlugRoute = ExpertsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ExpertsRoute,
+  id: '/experts/$slug',
+  path: '/experts/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
@@ -180,6 +180,7 @@ export interface RootRouteChildren {
   ResourcesRoute: typeof ResourcesRouteWithChildren
   RetreatsRoute: typeof RetreatsRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
+  ExpertsSlugRoute: typeof ExpertsSlugRoute
   ExpertsIndexRoute: typeof ExpertsIndexRoute
 }
 
@@ -257,10 +258,10 @@ declare module '@tanstack/react-router' {
     }
     '/experts/$slug': {
       id: '/experts/$slug'
-      path: '/$slug'
+      path: '/experts/$slug'
       fullPath: '/experts/$slug'
       preLoaderRoute: typeof ExpertsSlugRouteImport
-      parentRoute: typeof ExpertsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
       id: '/api/chat'
@@ -305,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesRoute: ResourcesRouteWithChildren,
   RetreatsRoute: RetreatsRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
+  ExpertsSlugRoute: ExpertsSlugRoute,
   ExpertsIndexRoute: ExpertsIndexRoute,
 }
 export const routeTree = rootRouteImport
