@@ -7,6 +7,8 @@ import retreatTeam from "@/assets/retreat-team.jpg";
 import journalFlatlay from "@/assets/journal-flatlay.jpg";
 import corporateCircle from "@/assets/corporate-circle.jpg";
 import { FlowerMark } from "@/components/FlowerMark";
+import { ParallaxImage } from "@/components/ParallaxImage";
+
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -43,26 +45,25 @@ function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-[color:var(--navy)] text-[color:var(--cream)]">
       <div className="absolute inset-0 -z-10">
-        <img
+        <ParallaxImage
           src={heroSanctuary}
           alt="Morning light through sheer curtains in a still meditation space"
-          width={1600}
-          height={1024}
-          className="h-full w-full object-cover opacity-55"
+          className="opacity-55"
+          strength={0.25}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[color:var(--navy)]/70 via-[color:var(--navy)]/40 to-[color:var(--navy)]" />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 pb-28 pt-28 lg:px-10 lg:pb-40 lg:pt-40">
-        <p className="font-eyebrow text-[color:var(--gold-soft)]">Mind · Body · Soul</p>
-        <h1 className="mt-6 max-w-3xl font-display text-5xl leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+        <p className="animate-fade-up font-eyebrow text-[color:var(--gold-soft)]">Mind · Body · Soul</p>
+        <h1 className="animate-fade-up animate-fade-up-delay-1 mt-6 max-w-3xl font-display text-5xl leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
           Care that meets you <span className="text-gold-gradient italic">where you are.</span>
         </h1>
-        <p className="mt-6 max-w-xl text-lg text-[color:var(--sand)]">
+        <p className="animate-fade-up animate-fade-up-delay-2 mt-6 max-w-xl text-lg text-[color:var(--sand)]">
           Nirvana Wellness is a Dhaka-based practice offering psychological, somatic, and
           contemplative care — for individuals, expats, and teams navigating real life.
         </p>
-        <div className="mt-10 flex flex-wrap items-center gap-4">
+        <div className="animate-fade-up animate-fade-up-delay-3 mt-10 flex flex-wrap items-center gap-4">
           <Link
             to="/book"
             className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-6 py-3 text-sm font-medium text-[color:var(--navy)] shadow-[0_10px_40px_-15px_rgba(212,169,74,0.7)] transition-transform hover:-translate-y-0.5"
@@ -81,6 +82,7 @@ function Hero() {
     </section>
   );
 }
+
 
 /* ---------- 2. Mind / Body / Soul triad ---------- */
 const PILLARS = [

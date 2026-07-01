@@ -1,7 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ExpertCard } from "@/components/ExpertCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getResource, type ContentBlock } from "@/data/resources";
 import { getExpert } from "@/data/experts";
+
 
 export const Route = createFileRoute("/resources/$slug")({
   loader: ({ params }) => {
@@ -35,16 +37,23 @@ function ResourceArticlePage() {
     <div>
       {/* Article header */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-3xl px-6 pb-14 pt-24 lg:pt-32">
-          <p className="font-eyebrow text-[color:var(--gold-deep)]">
+        <Breadcrumbs
+          items={[
+            { label: "Journal", to: "/resources" },
+            { label: resource.title },
+          ]}
+        />
+        <div className="mx-auto max-w-3xl px-6 pb-14 pt-8 lg:pt-12">
+          <p className="animate-fade-up font-eyebrow text-[color:var(--gold-deep)]">
             {resource.track}
             {resource.category ? ` · ${resource.category}` : ""}
             {resource.isPlaceholder ? " · Illustrative" : ""}
           </p>
-          <h1 className="mt-5 font-display text-4xl leading-[1.1] md:text-5xl">
+          <h1 className="animate-fade-up animate-fade-up-delay-1 mt-5 font-display text-4xl leading-[1.1] md:text-5xl">
             {resource.title}
           </h1>
-          <p className="mt-5 text-lg text-muted-foreground">{resource.dek}</p>
+          <p className="animate-fade-up animate-fade-up-delay-2 mt-5 text-lg text-muted-foreground">{resource.dek}</p>
+
           <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
             <span>
               By{" "}

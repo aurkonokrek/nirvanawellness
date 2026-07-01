@@ -2,8 +2,10 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, MapPin, Clock, Users, Check } from "lucide-react";
 import { FlowerMark } from "@/components/FlowerMark";
 import { ExpertCard } from "@/components/ExpertCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getRetreat } from "@/data/retreats";
 import { getExpert } from "@/data/experts";
+
 
 export const Route = createFileRoute("/retreats/$slug")({
   loader: ({ params }) => {
@@ -42,16 +44,25 @@ function RetreatDetailPage() {
       {/* Hero (mandala placeholder — real photography drops in later) */}
       <section className="relative overflow-hidden bg-[color:var(--navy)] text-[color:var(--cream)]">
         <FlowerMark className="pointer-events-none absolute -right-24 -bottom-24 h-[520px] w-[520px] text-[color:var(--gold)] opacity-[0.05]" />
-        <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
-          <p className="font-eyebrow text-[color:var(--gold-soft)]">
+        <Breadcrumbs
+          tone="dark"
+          items={[
+            { label: "Retreats", to: "/retreats" },
+            { label: retreat.title },
+          ]}
+        />
+        <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-10 lg:pb-32 lg:pt-14">
+          <p className="animate-fade-up font-eyebrow text-[color:var(--gold-soft)]">
+
             Retreat{retreat.isPlaceholder ? " · Illustrative" : ""}
           </p>
-          <h1 className="mt-5 max-w-4xl font-display text-5xl leading-[1.05] md:text-6xl">
+          <h1 className="animate-fade-up animate-fade-up-delay-1 mt-5 max-w-4xl font-display text-5xl leading-[1.05] md:text-6xl">
             {retreat.title}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg italic text-[color:var(--sand)]">
+          <p className="animate-fade-up animate-fade-up-delay-2 mt-6 max-w-2xl text-lg italic text-[color:var(--sand)]">
             {retreat.tagline}
           </p>
+
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
               to="/book"

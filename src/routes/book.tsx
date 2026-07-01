@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/book")({
   head: () => ({
@@ -36,17 +38,19 @@ function BookPage() {
   return (
     <div>
       <section className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-6 pb-12 pt-24 lg:px-10 lg:pt-32">
-          <p className="font-eyebrow text-muted-foreground">Reach us</p>
-          <h1 className="mt-5 max-w-3xl font-display text-5xl leading-[1.05] md:text-6xl">
+        <Breadcrumbs items={[{ label: "Book & Contact" }]} />
+        <div className="mx-auto max-w-7xl px-6 pb-12 pt-8 lg:px-10 lg:pt-12">
+          <p className="animate-fade-up font-eyebrow text-muted-foreground">Reach us</p>
+          <h1 className="animate-fade-up animate-fade-up-delay-1 mt-5 max-w-3xl font-display text-5xl leading-[1.05] md:text-6xl">
             One doorway <span className="italic text-gold-gradient">for everything.</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="animate-fade-up animate-fade-up-delay-2 mt-6 max-w-2xl text-lg text-muted-foreground">
             Whether you're booking your first session, planning a program for your team, or just
             saying hello — start here.
           </p>
         </div>
       </section>
+
 
       <section className="mx-auto max-w-7xl px-6 pt-12 lg:px-10">
         <div className="grid gap-3 md:grid-cols-3">

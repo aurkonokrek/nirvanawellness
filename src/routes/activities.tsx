@@ -35,10 +35,12 @@ function ActivitiesPage() {
   return (
     <div>
       <PageHeader
+        crumbs={[{ label: "Activities" }]}
         eyebrow="Activities"
         title="Sessions, workshops, courses & retreats."
         lede="Filter by format. Every activity is designed to work as a one-off or as a doorway into deeper care."
       />
+
       <section className="mx-auto max-w-7xl px-6 pt-2 lg:px-10">
         <div className="rounded-md border border-[color:var(--gold-deep)]/40 bg-[color:var(--gold-soft)]/15 px-4 py-3 text-sm text-foreground/80">
           <strong className="font-medium text-[color:var(--navy)]">Placeholder catalog.</strong>{" "}

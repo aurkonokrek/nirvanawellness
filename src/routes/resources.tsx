@@ -31,6 +31,8 @@ function ResourcesPage() {
   return (
     <div>
       <PageHeader
+        crumbs={[{ label: "Journal" }]}
+
         eyebrow="Journal"
         title={
           <>
