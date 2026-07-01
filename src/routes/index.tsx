@@ -8,6 +8,7 @@ import journalFlatlay from "@/assets/journal-flatlay.jpg";
 import corporateCircle from "@/assets/corporate-circle.jpg";
 import { FlowerMark } from "@/components/FlowerMark";
 import { ParallaxImage } from "@/components/ParallaxImage";
+import { Reveal } from "@/components/Reveal";
 
 
 export const Route = createFileRoute("/")({
