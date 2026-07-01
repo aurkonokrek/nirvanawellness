@@ -16,10 +16,12 @@ import { Route as BookRouteImport } from './routes/book'
 import { Route as ApproachRouteImport } from './routes/approach'
 import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RetreatsIndexRouteImport } from './routes/retreats.index'
 import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as ExpertsIndexRouteImport } from './routes/experts.index'
 import { Route as RetreatsSlugRouteImport } from './routes/retreats.$slug'
 import { Route as ResourcesTestsRouteImport } from './routes/resources.tests'
+import { Route as ResourcesCreativeCreationsRouteImport } from './routes/resources.creative-creations'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -61,6 +63,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RetreatsIndexRoute = RetreatsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RetreatsRoute,
+} as any)
 const ResourcesIndexRoute = ResourcesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -81,6 +88,12 @@ const ResourcesTestsRoute = ResourcesTestsRouteImport.update({
   path: '/tests',
   getParentRoute: () => ResourcesRoute,
 } as any)
+const ResourcesCreativeCreationsRoute =
+  ResourcesCreativeCreationsRouteImport.update({
+    id: '/creative-creations',
+    path: '/creative-creations',
+    getParentRoute: () => ResourcesRoute,
+  } as any)
 const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -118,10 +131,12 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/resources/creative-creations': typeof ResourcesCreativeCreationsRoute
   '/resources/tests': typeof ResourcesTestsRouteWithChildren
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts/': typeof ExpertsIndexRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/retreats/': typeof RetreatsIndexRoute
   '/resources/tests/$slug': typeof ResourcesTestsSlugRoute
   '/resources/tests/': typeof ResourcesTestsIndexRoute
 }
@@ -131,13 +146,14 @@ export interface FileRoutesByTo {
   '/approach': typeof ApproachRoute
   '/book': typeof BookRoute
   '/corporate': typeof CorporateRoute
-  '/retreats': typeof RetreatsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/resources/creative-creations': typeof ResourcesCreativeCreationsRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts': typeof ExpertsIndexRoute
   '/resources': typeof ResourcesIndexRoute
+  '/retreats': typeof RetreatsIndexRoute
   '/resources/tests/$slug': typeof ResourcesTestsSlugRoute
   '/resources/tests': typeof ResourcesTestsIndexRoute
 }
@@ -153,10 +169,12 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/resources/creative-creations': typeof ResourcesCreativeCreationsRoute
   '/resources/tests': typeof ResourcesTestsRouteWithChildren
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts/': typeof ExpertsIndexRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/retreats/': typeof RetreatsIndexRoute
   '/resources/tests/$slug': typeof ResourcesTestsSlugRoute
   '/resources/tests/': typeof ResourcesTestsIndexRoute
 }
@@ -173,10 +191,12 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
+    | '/resources/creative-creations'
     | '/resources/tests'
     | '/retreats/$slug'
     | '/experts/'
     | '/resources/'
+    | '/retreats/'
     | '/resources/tests/$slug'
     | '/resources/tests/'
   fileRoutesByTo: FileRoutesByTo
@@ -186,13 +206,14 @@ export interface FileRouteTypes {
     | '/approach'
     | '/book'
     | '/corporate'
-    | '/retreats'
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
+    | '/resources/creative-creations'
     | '/retreats/$slug'
     | '/experts'
     | '/resources'
+    | '/retreats'
     | '/resources/tests/$slug'
     | '/resources/tests'
   id:
@@ -207,10 +228,12 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
+    | '/resources/creative-creations'
     | '/resources/tests'
     | '/retreats/$slug'
     | '/experts/'
     | '/resources/'
+    | '/retreats/'
     | '/resources/tests/$slug'
     | '/resources/tests/'
   fileRoutesById: FileRoutesById
@@ -279,6 +302,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/retreats/': {
+      id: '/retreats/'
+      path: '/'
+      fullPath: '/retreats/'
+      preLoaderRoute: typeof RetreatsIndexRouteImport
+      parentRoute: typeof RetreatsRoute
+    }
     '/resources/': {
       id: '/resources/'
       path: '/'
@@ -305,6 +335,13 @@ declare module '@tanstack/react-router' {
       path: '/tests'
       fullPath: '/resources/tests'
       preLoaderRoute: typeof ResourcesTestsRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
+    '/resources/creative-creations': {
+      id: '/resources/creative-creations'
+      path: '/creative-creations'
+      fullPath: '/resources/creative-creations'
+      preLoaderRoute: typeof ResourcesCreativeCreationsRouteImport
       parentRoute: typeof ResourcesRoute
     }
     '/resources/$slug': {
@@ -361,12 +398,14 @@ const ResourcesTestsRouteWithChildren = ResourcesTestsRoute._addFileChildren(
 
 interface ResourcesRouteChildren {
   ResourcesSlugRoute: typeof ResourcesSlugRoute
+  ResourcesCreativeCreationsRoute: typeof ResourcesCreativeCreationsRoute
   ResourcesTestsRoute: typeof ResourcesTestsRouteWithChildren
   ResourcesIndexRoute: typeof ResourcesIndexRoute
 }
 
 const ResourcesRouteChildren: ResourcesRouteChildren = {
   ResourcesSlugRoute: ResourcesSlugRoute,
+  ResourcesCreativeCreationsRoute: ResourcesCreativeCreationsRoute,
   ResourcesTestsRoute: ResourcesTestsRouteWithChildren,
   ResourcesIndexRoute: ResourcesIndexRoute,
 }
@@ -377,10 +416,12 @@ const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
 
 interface RetreatsRouteChildren {
   RetreatsSlugRoute: typeof RetreatsSlugRoute
+  RetreatsIndexRoute: typeof RetreatsIndexRoute
 }
 
 const RetreatsRouteChildren: RetreatsRouteChildren = {
   RetreatsSlugRoute: RetreatsSlugRoute,
+  RetreatsIndexRoute: RetreatsIndexRoute,
 }
 
 const RetreatsRouteWithChildren = RetreatsRoute._addFileChildren(
