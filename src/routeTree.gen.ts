@@ -9,38 +9,218 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RetreatsRouteImport } from './routes/retreats'
+import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as ExpertsRouteImport } from './routes/experts'
+import { Route as CorporateRouteImport } from './routes/corporate'
+import { Route as BookRouteImport } from './routes/book'
+import { Route as ApproachRouteImport } from './routes/approach'
+import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RetreatsSlugRouteImport } from './routes/retreats.$slug'
+import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
+import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
 
+const RetreatsRoute = RetreatsRouteImport.update({
+  id: '/retreats',
+  path: '/retreats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExpertsRoute = ExpertsRouteImport.update({
+  id: '/experts',
+  path: '/experts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CorporateRoute = CorporateRouteImport.update({
+  id: '/corporate',
+  path: '/corporate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApproachRoute = ApproachRouteImport.update({
+  id: '/approach',
+  path: '/approach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ActivitiesRoute = ActivitiesRouteImport.update({
+  id: '/activities',
+  path: '/activities',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RetreatsSlugRoute = RetreatsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => RetreatsRoute,
+} as any)
+const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ResourcesRoute,
+} as any)
+const ExpertsSlugRoute = ExpertsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ExpertsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/activities': typeof ActivitiesRoute
+  '/approach': typeof ApproachRoute
+  '/book': typeof BookRoute
+  '/corporate': typeof CorporateRoute
+  '/experts': typeof ExpertsRouteWithChildren
+  '/resources': typeof ResourcesRouteWithChildren
+  '/retreats': typeof RetreatsRouteWithChildren
+  '/experts/$slug': typeof ExpertsSlugRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
+  '/retreats/$slug': typeof RetreatsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/activities': typeof ActivitiesRoute
+  '/approach': typeof ApproachRoute
+  '/book': typeof BookRoute
+  '/corporate': typeof CorporateRoute
+  '/experts': typeof ExpertsRouteWithChildren
+  '/resources': typeof ResourcesRouteWithChildren
+  '/retreats': typeof RetreatsRouteWithChildren
+  '/experts/$slug': typeof ExpertsSlugRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
+  '/retreats/$slug': typeof RetreatsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/activities': typeof ActivitiesRoute
+  '/approach': typeof ApproachRoute
+  '/book': typeof BookRoute
+  '/corporate': typeof CorporateRoute
+  '/experts': typeof ExpertsRouteWithChildren
+  '/resources': typeof ResourcesRouteWithChildren
+  '/retreats': typeof RetreatsRouteWithChildren
+  '/experts/$slug': typeof ExpertsSlugRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
+  '/retreats/$slug': typeof RetreatsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/activities'
+    | '/approach'
+    | '/book'
+    | '/corporate'
+    | '/experts'
+    | '/resources'
+    | '/retreats'
+    | '/experts/$slug'
+    | '/resources/$slug'
+    | '/retreats/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/activities'
+    | '/approach'
+    | '/book'
+    | '/corporate'
+    | '/experts'
+    | '/resources'
+    | '/retreats'
+    | '/experts/$slug'
+    | '/resources/$slug'
+    | '/retreats/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/activities'
+    | '/approach'
+    | '/book'
+    | '/corporate'
+    | '/experts'
+    | '/resources'
+    | '/retreats'
+    | '/experts/$slug'
+    | '/resources/$slug'
+    | '/retreats/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ActivitiesRoute: typeof ActivitiesRoute
+  ApproachRoute: typeof ApproachRoute
+  BookRoute: typeof BookRoute
+  CorporateRoute: typeof CorporateRoute
+  ExpertsRoute: typeof ExpertsRouteWithChildren
+  ResourcesRoute: typeof ResourcesRouteWithChildren
+  RetreatsRoute: typeof RetreatsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/retreats': {
+      id: '/retreats'
+      path: '/retreats'
+      fullPath: '/retreats'
+      preLoaderRoute: typeof RetreatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/experts': {
+      id: '/experts'
+      path: '/experts'
+      fullPath: '/experts'
+      preLoaderRoute: typeof ExpertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/corporate': {
+      id: '/corporate'
+      path: '/corporate'
+      fullPath: '/corporate'
+      preLoaderRoute: typeof CorporateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/approach': {
+      id: '/approach'
+      path: '/approach'
+      fullPath: '/approach'
+      preLoaderRoute: typeof ApproachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/activities': {
+      id: '/activities'
+      path: '/activities'
+      fullPath: '/activities'
+      preLoaderRoute: typeof ActivitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +228,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/retreats/$slug': {
+      id: '/retreats/$slug'
+      path: '/$slug'
+      fullPath: '/retreats/$slug'
+      preLoaderRoute: typeof RetreatsSlugRouteImport
+      parentRoute: typeof RetreatsRoute
+    }
+    '/resources/$slug': {
+      id: '/resources/$slug'
+      path: '/$slug'
+      fullPath: '/resources/$slug'
+      preLoaderRoute: typeof ResourcesSlugRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
+    '/experts/$slug': {
+      id: '/experts/$slug'
+      path: '/$slug'
+      fullPath: '/experts/$slug'
+      preLoaderRoute: typeof ExpertsSlugRouteImport
+      parentRoute: typeof ExpertsRoute
+    }
   }
 }
 
+interface ExpertsRouteChildren {
+  ExpertsSlugRoute: typeof ExpertsSlugRoute
+}
+
+const ExpertsRouteChildren: ExpertsRouteChildren = {
+  ExpertsSlugRoute: ExpertsSlugRoute,
+}
+
+const ExpertsRouteWithChildren =
+  ExpertsRoute._addFileChildren(ExpertsRouteChildren)
+
+interface ResourcesRouteChildren {
+  ResourcesSlugRoute: typeof ResourcesSlugRoute
+}
+
+const ResourcesRouteChildren: ResourcesRouteChildren = {
+  ResourcesSlugRoute: ResourcesSlugRoute,
+}
+
+const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
+  ResourcesRouteChildren,
+)
+
+interface RetreatsRouteChildren {
+  RetreatsSlugRoute: typeof RetreatsSlugRoute
+}
+
+const RetreatsRouteChildren: RetreatsRouteChildren = {
+  RetreatsSlugRoute: RetreatsSlugRoute,
+}
+
+const RetreatsRouteWithChildren = RetreatsRoute._addFileChildren(
+  RetreatsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ActivitiesRoute: ActivitiesRoute,
+  ApproachRoute: ApproachRoute,
+  BookRoute: BookRoute,
+  CorporateRoute: CorporateRoute,
+  ExpertsRoute: ExpertsRouteWithChildren,
+  ResourcesRoute: ResourcesRouteWithChildren,
+  RetreatsRoute: RetreatsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
