@@ -8,7 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Menu, X, Facebook, Instagram, Youtube } from "lucide-react";
+import { Menu, X, Facebook, Instagram, Youtube, ChevronDown } from "lucide-react";
 import { ChatWidget } from "@/components/ChatWidget";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
@@ -17,13 +17,24 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import nirvanaLogo from "@/assets/nirvana-logo.png";
 
-const NAV = [
+type NavItem =
+  | { to: string; label: string }
+  | { label: string; children: { to: string; label: string }[] };
+
+const NAV: readonly NavItem[] = [
   { to: "/approach", label: "Approach" },
   { to: "/experts", label: "Experts" },
   { to: "/activities", label: "Activities" },
   { to: "/retreats", label: "Retreats" },
   { to: "/corporate", label: "Corporate" },
-  { to: "/resources", label: "Journal" },
+  {
+    label: "Resources",
+    children: [
+      { to: "/resources/tests", label: "Tests & Games" },
+      { to: "/resources", label: "Journal" },
+      { to: "/resources", label: "Creative Creations" },
+    ],
+  },
 ] as const;
 
 function NotFoundComponent() {

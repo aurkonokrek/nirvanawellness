@@ -24,6 +24,7 @@ import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ResourcesTestsIndexRouteImport } from './routes/resources.tests.index'
+import { Route as ResourcesTestsSlugRouteImport } from './routes/resources.tests.$slug'
 
 const RetreatsRoute = RetreatsRouteImport.update({
   id: '/retreats',
@@ -100,6 +101,11 @@ const ResourcesTestsIndexRoute = ResourcesTestsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ResourcesTestsRoute,
 } as any)
+const ResourcesTestsSlugRoute = ResourcesTestsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ResourcesTestsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts/': typeof ExpertsIndexRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/resources/tests/$slug': typeof ResourcesTestsSlugRoute
   '/resources/tests/': typeof ResourcesTestsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts': typeof ExpertsIndexRoute
   '/resources': typeof ResourcesIndexRoute
+  '/resources/tests/$slug': typeof ResourcesTestsSlugRoute
   '/resources/tests': typeof ResourcesTestsIndexRoute
 }
 export interface FileRoutesById {
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts/': typeof ExpertsIndexRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/resources/tests/$slug': typeof ResourcesTestsSlugRoute
   '/resources/tests/': typeof ResourcesTestsIndexRoute
 }
 export interface FileRouteTypes {
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/retreats/$slug'
     | '/experts/'
     | '/resources/'
+    | '/resources/tests/$slug'
     | '/resources/tests/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
     | '/retreats/$slug'
     | '/experts'
     | '/resources'
+    | '/resources/tests/$slug'
     | '/resources/tests'
   id:
     | '__root__'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/retreats/$slug'
     | '/experts/'
     | '/resources/'
+    | '/resources/tests/$slug'
     | '/resources/tests/'
   fileRoutesById: FileRoutesById
 }
@@ -323,14 +335,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResourcesTestsIndexRouteImport
       parentRoute: typeof ResourcesTestsRoute
     }
+    '/resources/tests/$slug': {
+      id: '/resources/tests/$slug'
+      path: '/$slug'
+      fullPath: '/resources/tests/$slug'
+      preLoaderRoute: typeof ResourcesTestsSlugRouteImport
+      parentRoute: typeof ResourcesTestsRoute
+    }
   }
 }
 
 interface ResourcesTestsRouteChildren {
+  ResourcesTestsSlugRoute: typeof ResourcesTestsSlugRoute
   ResourcesTestsIndexRoute: typeof ResourcesTestsIndexRoute
 }
 
 const ResourcesTestsRouteChildren: ResourcesTestsRouteChildren = {
+  ResourcesTestsSlugRoute: ResourcesTestsSlugRoute,
   ResourcesTestsIndexRoute: ResourcesTestsIndexRoute,
 }
 
