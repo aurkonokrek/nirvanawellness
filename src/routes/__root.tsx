@@ -99,7 +99,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Nirvana Wellness offers accessible, holistic psychological care in Dhaka. Sessions with licensed experts, corporate wellbeing programs, and retreats — for individuals, expats, and teams.",
       },
       { name: "author", content: "Nirvana Wellness" },
-      { property: "og:title", content: "Nirvana Wellness — Mind, Body & Soul care" },
+      { property: "og:title", content: "Nirvana Wellness — Mind, Body & Soul care in Dhaka" },
       {
         property: "og:description",
         content:
@@ -107,6 +107,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Nirvana Wellness — Mind, Body & Soul care in Dhaka" },
+      { name: "description", content: "Friendly Greetings analyzes websites and suggests redesigns to improve branding and user experience." },
+      { property: "og:description", content: "Friendly Greetings analyzes websites and suggests redesigns to improve branding and user experience." },
+      { name: "twitter:description", content: "Friendly Greetings analyzes websites and suggests redesigns to improve branding and user experience." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/8d5PLaLIWVbAtNFZsAIHwgpk4602/social-images/social-1782949202013-Nirvana_Logo.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/8d5PLaLIWVbAtNFZsAIHwgpk4602/social-images/social-1782949202013-Nirvana_Logo.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
