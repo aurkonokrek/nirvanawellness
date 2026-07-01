@@ -18,6 +18,8 @@ export type Expert = {
   quote?: string;
   approach?: string[];
   specialties?: string[];
+  experience?: string; // e.g. "10+ years"
+  education?: string[]; // degrees / academic training only
 };
 
 export const EXPERTS: Expert[] = [
