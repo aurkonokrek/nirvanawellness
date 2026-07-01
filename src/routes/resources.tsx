@@ -43,12 +43,9 @@ function ResourcesPage() {
 
       <section className="mx-auto max-w-7xl px-6 pt-2 lg:px-10">
         <div className="rounded-md border border-[color:var(--gold-deep)]/40 bg-[color:var(--gold-soft)]/15 px-4 py-3 text-sm text-foreground/80">
-          <strong className="font-medium text-[color:var(--navy)]">
-            Placeholder entries.
-          </strong>{" "}
-          Real articles and creative pieces are pending. The two-track index
-          and article template below are ready for content — nothing shown is
-          real editorial yet.
+          <strong className="font-medium text-[color:var(--navy)]">Creative Creations</strong>{" "}
+          entries are still placeholders — real visual and sound work will
+          land there separately. The Journal is live.
         </div>
       </section>
 
