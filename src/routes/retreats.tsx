@@ -52,7 +52,7 @@ function RetreatsPage() {
               className="group flex flex-col overflow-hidden rounded-none border border-[color:var(--gold)]/30 bg-[#FAFAFA] p-8 transition-colors hover:border-[color:var(--gold-deep)]"
             >
               <p className="font-eyebrow text-[10px] tracking-[0.22em] text-[color:var(--gold-deep)]">
-                Retreat · Illustrative
+                Retreat{r.isPlaceholder ? " · Illustrative" : ""}
               </p>
               <p className="mt-4 font-display text-3xl leading-tight text-[color:var(--navy)] transition-colors group-hover:text-[color:var(--gold-deep)]">
                 {r.title}
