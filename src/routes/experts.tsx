@@ -36,7 +36,7 @@ function ExpertsPage() {
       <PageHeader
         eyebrow="Experts"
         title="The people behind the practice."
-        lede="Every clinician here is licensed, actively practicing, and chosen for their ability to hold real conversations — not just deliver protocols."
+        lede="Bios and credentials below are sourced from nirvanawellness.org. Additional detail is pending direct confirmation from each practitioner."
       />
 
       {/* Filters */}

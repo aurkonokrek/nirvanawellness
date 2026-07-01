@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowUpRight, Clock, Repeat } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { ACTIVITIES, ACTIVITY_FILTERS, type Activity } from "@/data/activities";
 import { getExpert } from "@/data/experts";
@@ -39,6 +39,12 @@ function ActivitiesPage() {
         title="Sessions, workshops, courses & retreats."
         lede="Filter by format. Every activity is designed to work as a one-off or as a doorway into deeper care."
       />
+      <section className="mx-auto max-w-7xl px-6 pt-2 lg:px-10">
+        <div className="rounded-md border border-[color:var(--gold-deep)]/40 bg-[color:var(--gold-soft)]/15 px-4 py-3 text-sm text-foreground/80">
+          <strong className="font-medium text-[color:var(--navy)]">Placeholder catalog.</strong>{" "}
+          Program details are pending verification. The entries below exist to keep the filter structure in place — they are not bookable offerings yet.
+        </div>
+      </section>
       <section className="mx-auto max-w-7xl px-6 py-8 lg:px-10">
         <div className="flex flex-wrap gap-2">
           {ACTIVITY_FILTERS.map((f) => {
@@ -88,11 +94,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
         {activity.title}
       </p>
       <p className="mt-2 text-sm text-foreground/85">{activity.lede}</p>
-      <p className="mt-4 text-xs text-muted-foreground">{activity.who}</p>
-      <div className="mt-5 flex flex-wrap gap-4 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" />{activity.duration}</span>
-        <span className="inline-flex items-center gap-1.5"><Repeat className="h-3.5 w-3.5" />{activity.cadence}</span>
-      </div>
+      <p className="mt-4 text-xs uppercase tracking-wider text-[color:var(--gold-deep)]">Placeholder · content pending</p>
       <div className="mt-auto flex items-center justify-between pt-6">
         <span className="text-xs text-muted-foreground">
           {expert ? `With ${expert.name}` : activity.format === "Retreat" ? "Full detail on Retreats" : "Team-wide"}

@@ -61,8 +61,12 @@ function ExpertProfilePage() {
               </blockquote>
             )}
             <div className="mt-8 flex flex-wrap gap-4 text-sm text-[color:var(--sand)]">
-              <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4" />{expert.location}</span>
-              <span className="inline-flex items-center gap-1.5"><Languages className="h-4 w-4" />{expert.languages.join(", ")}</span>
+              {expert.location && (
+                <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4" />{expert.location}</span>
+              )}
+              {expert.languages && expert.languages.length > 0 && (
+                <span className="inline-flex items-center gap-1.5"><Languages className="h-4 w-4" />{expert.languages.join(", ")}</span>
+              )}
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
@@ -94,26 +98,30 @@ function ExpertProfilePage() {
               ))}
             </div>
 
-            <div className="mt-16">
-              <p className="font-eyebrow text-[color:var(--gold-deep)]">Approach</p>
-              <h2 className="mt-3 font-display text-3xl">How they actually work with clients</h2>
-              <div className="mt-6 space-y-5 text-foreground/85">
-                {expert.approach.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+            {expert.approach && expert.approach.length > 0 && (
+              <div className="mt-16">
+                <p className="font-eyebrow text-[color:var(--gold-deep)]">Approach</p>
+                <h2 className="mt-3 font-display text-3xl">How they actually work with clients</h2>
+                <div className="mt-6 space-y-5 text-foreground/85">
+                  {expert.approach.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <aside className="space-y-10">
-            <div>
-              <p className="font-eyebrow text-muted-foreground">Specialties</p>
-              <ul className="mt-4 space-y-2">
-                {expert.specialties.map((s) => (
-                  <li key={s} className="border-t border-border pt-2 text-sm">{s}</li>
-                ))}
-              </ul>
-            </div>
+            {expert.specialties && expert.specialties.length > 0 && (
+              <div>
+                <p className="font-eyebrow text-muted-foreground">Specialties</p>
+                <ul className="mt-4 space-y-2">
+                  {expert.specialties.map((s) => (
+                    <li key={s} className="border-t border-border pt-2 text-sm">{s}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div>
               <p className="font-eyebrow text-muted-foreground">Credentials</p>
               <ul className="mt-4 space-y-3">
