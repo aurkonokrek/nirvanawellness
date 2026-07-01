@@ -191,19 +191,25 @@ function RetreatDetailPage() {
       </section>
 
       {/* Facilitators */}
-      {facilitators.length > 0 && (
+      {(facilitators.length > 0 || retreat.facilitatorsNote) && (
         <section className="border-t border-border">
           <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-28">
             <p className="font-eyebrow text-muted-foreground">Facilitators</p>
             <h2 className="mt-3 font-display text-3xl">Who leads the room</h2>
-            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {facilitators.map((f) => (
-                <ExpertCard key={f.slug} expert={f} eyebrow="Facilitator" />
-              ))}
-            </div>
+            {retreat.facilitatorsNote && (
+              <p className="mt-4 max-w-2xl text-foreground/80">{retreat.facilitatorsNote}</p>
+            )}
+            {facilitators.length > 0 && (
+              <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {facilitators.map((f) => (
+                  <ExpertCard key={f.slug} expert={f} eyebrow="Facilitator" />
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
+
 
       {/* CTA — routes to the same corporate inquiry flow as /corporate */}
       <section className="border-t border-border bg-[color:var(--navy)] text-[color:var(--cream)]">
