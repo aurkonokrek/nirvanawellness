@@ -95,43 +95,39 @@ function ExpertCard({ expert }: { expert: Expert }) {
     <Link
       to="/experts/$slug"
       params={{ slug: expert.slug }}
-      className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-[color:var(--gold-deep)]"
+      className="group flex flex-col overflow-hidden rounded-none border border-[color:var(--gold)]/30 bg-[#FAFAFA] shadow-none transition-colors hover:border-[color:var(--gold-deep)]"
     >
-      <div className="relative flex aspect-[4/3] items-center justify-center bg-[color:var(--navy)] text-[color:var(--cream)]">
-        <span className="font-display text-6xl text-gold-gradient">{initials(expert.name)}</span>
-        <div className="absolute bottom-3 left-4 flex items-center gap-1.5 text-xs text-[color:var(--sand)]/80">
-          <MapPin className="h-3 w-3" /> {expert.location}
-        </div>
+      <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden bg-[color:var(--navy)] text-[color:var(--cream)]">
+        {/* Mandala watermark */}
+        <FlowerMark className="pointer-events-none absolute -right-10 -bottom-10 h-64 w-64 text-[color:var(--gold)] opacity-[0.06]" />
+        <span className="relative font-display text-4xl tracking-[0.15em] text-gold-gradient">
+          {initials(expert.name)}
+        </span>
         <div className="absolute right-3 top-3 flex gap-1">
           {expert.pillars.map((p) => (
             <span
               key={p}
-              className="rounded-full border border-white/20 bg-black/20 px-2 py-0.5 font-eyebrow text-[10px] text-[color:var(--sand)]"
+              className="border border-white/25 px-2 py-0.5 font-eyebrow text-[10px] tracking-[0.18em] text-[color:var(--sand)]"
             >
               {p}
             </span>
           ))}
         </div>
       </div>
-      <div className="flex flex-1 flex-col p-6">
-        <p className="font-display text-2xl transition-colors group-hover:text-[color:var(--gold-deep)]">
+      <div className="flex flex-1 flex-col px-5 py-5">
+        <p className="font-display text-[26px] leading-tight text-[color:var(--navy)] transition-colors group-hover:text-[color:var(--gold-deep)]">
           {expert.name}
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">{expert.role}</p>
-        <p className="mt-4 text-sm text-foreground/85">{expert.short}</p>
-        <div className="mt-6 flex flex-wrap gap-1.5">
-          {expert.focus.slice(0, 4).map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-border px-2.5 py-0.5 text-[11px] text-muted-foreground"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-        <span className="mt-6 inline-flex items-center gap-1 text-sm text-[color:var(--gold-deep)]">
+        <p className="mt-1.5 text-xs italic text-muted-foreground">{expert.role}</p>
+        <p className="mt-3 text-sm leading-relaxed text-foreground/80">{expert.short}</p>
+        {expert.focus.length > 0 && (
+          <p className="mt-4 font-eyebrow text-[10px] tracking-[0.22em] text-[color:var(--gold-deep)]">
+            {expert.focus.slice(0, 4).join(" · ")}
+          </p>
+        )}
+        <span className="mt-4 inline-flex items-center gap-1 text-sm text-[color:var(--navy)] transition-colors group-hover:text-transparent group-hover:bg-gold-gradient group-hover:bg-clip-text">
           View profile
-          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <ArrowUpRight className="h-4 w-4 text-[color:var(--gold-deep)] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </span>
       </div>
     </Link>
