@@ -33,7 +33,7 @@ const NAV: readonly NavItem[] = [
     children: [
       { to: "/resources/tests", label: "Tests & Games" },
       { to: "/resources", label: "Journal" },
-      { to: "/resources", label: "Creative Creations" },
+      { to: "/resources/creative-creations", label: "Creative Creations" },
     ],
   },
 ] as const;
@@ -253,25 +253,26 @@ function NavDropdown({
 }: {
   item: { label: string; children: { to: string; label: string }[] };
 }) {
-  const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isActive = item.children.some(
-    (c) => pathname === c.to || pathname.startsWith(c.to + "/"),
-  );
+  const isChildActive = (to: string) => {
+    if (to === "/resources") {
+      return (
+        pathname === "/resources" ||
+        (pathname.startsWith("/resources/") &&
+          !pathname.startsWith("/resources/tests") &&
+          !pathname.startsWith("/resources/creative-creations"))
+      );
+    }
+    return pathname === to || pathname.startsWith(to + "/");
+  };
+  const isActive = item.children.some((c) => isChildActive(c.to));
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
+    <details className="group relative">
+      <summary
         aria-haspopup="true"
-        aria-expanded={open}
         className={
-          "group relative inline-flex items-center gap-1 py-1 text-sm transition-colors hover:text-foreground " +
+          "relative inline-flex cursor-pointer list-none items-center gap-1 py-1 text-sm transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden " +
           (isActive
             ? "font-medium text-[color:var(--navy)]"
             : "text-foreground/70")
@@ -279,9 +280,7 @@ function NavDropdown({
       >
         {item.label}
         <ChevronDown
-          className={
-            "h-3.5 w-3.5 transition-transform " + (open ? "rotate-180" : "")
-          }
+          className="h-3.5 w-3.5 transition-transform group-open:rotate-180"
           aria-hidden="true"
         />
         <span
@@ -293,34 +292,30 @@ function NavDropdown({
               : "scale-x-0 group-hover:scale-x-100")
           }
         />
-      </button>
+      </summary>
 
-      {open && (
-        <div className="absolute left-1/2 top-full z-50 pt-3 -translate-x-1/2">
-          <div className="min-w-[220px] rounded-md border border-border bg-background/95 py-2 shadow-lg backdrop-blur">
-            {item.children.map((c, i) => {
-              const active =
-                pathname === c.to || pathname.startsWith(c.to + "/");
-              return (
-                <Link
-                  key={`${c.label}-${i}`}
-                  to={c.to}
-                  onClick={() => setOpen(false)}
-                  className={
-                    "block px-4 py-2 text-sm transition-colors " +
-                    (active
-                      ? "bg-[color:var(--gold-soft)]/25 text-[color:var(--navy)] font-medium"
-                      : "text-foreground/80 hover:bg-muted")
-                  }
-                >
-                  {c.label}
-                </Link>
-              );
-            })}
-          </div>
+      <div className="absolute left-1/2 top-full z-50 hidden -translate-x-1/2 pt-3 group-open:block group-hover:block group-focus-within:block">
+        <div className="min-w-[220px] rounded-md border border-border bg-background/95 py-2 shadow-lg backdrop-blur">
+          {item.children.map((c, i) => {
+            const active = isChildActive(c.to);
+            return (
+              <Link
+                key={`${c.label}-${i}`}
+                to={c.to}
+                className={
+                  "block px-4 py-2 text-sm transition-colors " +
+                  (active
+                    ? "bg-[color:var(--gold-soft)]/25 text-[color:var(--navy)] font-medium"
+                    : "text-foreground/80 hover:bg-muted")
+                }
+              >
+                {c.label}
+              </Link>
+            );
+          })}
         </div>
-      )}
-    </div>
+      </div>
+    </details>
   );
 }
 
