@@ -38,12 +38,7 @@ function RetreatsPage() {
 
       <section className="mx-auto max-w-7xl px-6 pt-2 lg:px-10">
         <div className="rounded-md border border-[color:var(--gold-deep)]/40 bg-[color:var(--gold-soft)]/15 px-4 py-3 text-sm text-foreground/80">
-          <strong className="font-medium text-[color:var(--navy)]">
-            Illustrative program shapes.
-          </strong>{" "}
-          Specific dates, locations, itineraries, and pricing are set with you
-          in a discovery call — the sample retreats below exist to show how a
-          real program page will read.
+          Entries marked <em className="not-italic font-medium text-[color:var(--navy)]">Illustrative</em> are placeholders — real content pending. Every real retreat is scoped in a discovery call.
         </div>
       </section>
 
@@ -57,7 +52,7 @@ function RetreatsPage() {
               className="group flex flex-col overflow-hidden rounded-none border border-[color:var(--gold)]/30 bg-[#FAFAFA] p-8 transition-colors hover:border-[color:var(--gold-deep)]"
             >
               <p className="font-eyebrow text-[10px] tracking-[0.22em] text-[color:var(--gold-deep)]">
-                Retreat · Illustrative
+                Retreat{r.isPlaceholder ? " · Illustrative" : ""}
               </p>
               <p className="mt-4 font-display text-3xl leading-tight text-[color:var(--navy)] transition-colors group-hover:text-[color:var(--gold-deep)]">
                 {r.title}

@@ -43,12 +43,9 @@ function ResourcesPage() {
 
       <section className="mx-auto max-w-7xl px-6 pt-2 lg:px-10">
         <div className="rounded-md border border-[color:var(--gold-deep)]/40 bg-[color:var(--gold-soft)]/15 px-4 py-3 text-sm text-foreground/80">
-          <strong className="font-medium text-[color:var(--navy)]">
-            Placeholder entries.
-          </strong>{" "}
-          Real articles and creative pieces are pending. The two-track index
-          and article template below are ready for content — nothing shown is
-          real editorial yet.
+          <strong className="font-medium text-[color:var(--navy)]">Creative Creations</strong>{" "}
+          entries are still placeholders — real visual and sound work will
+          land there separately. The Journal is live.
         </div>
       </section>
 
@@ -95,7 +92,9 @@ function ArticleCard({ resource }: { resource: Resource }) {
       className="group flex flex-col overflow-hidden rounded-none border border-[color:var(--gold)]/30 bg-[#FAFAFA] p-6 transition-colors hover:border-[color:var(--gold-deep)]"
     >
       <p className="font-eyebrow text-[10px] tracking-[0.22em] text-[color:var(--gold-deep)]">
-        {resource.track} · Illustrative
+        {resource.track}
+        {resource.category ? ` · ${resource.category}` : ""}
+        {resource.isPlaceholder ? " · Illustrative" : ""}
       </p>
       <p className="mt-4 font-display text-2xl leading-tight text-[color:var(--navy)] transition-colors group-hover:text-[color:var(--gold-deep)]">
         {resource.title}

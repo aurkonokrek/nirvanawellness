@@ -43,7 +43,9 @@ function RetreatDetailPage() {
       <section className="relative overflow-hidden bg-[color:var(--navy)] text-[color:var(--cream)]">
         <FlowerMark className="pointer-events-none absolute -right-24 -bottom-24 h-[520px] w-[520px] text-[color:var(--gold)] opacity-[0.05]" />
         <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
-          <p className="font-eyebrow text-[color:var(--gold-soft)]">Retreat · Illustrative</p>
+          <p className="font-eyebrow text-[color:var(--gold-soft)]">
+            Retreat{retreat.isPlaceholder ? " · Illustrative" : ""}
+          </p>
           <h1 className="mt-5 max-w-4xl font-display text-5xl leading-[1.05] md:text-6xl">
             {retreat.title}
           </h1>
@@ -67,16 +69,19 @@ function RetreatDetailPage() {
         </div>
       </section>
 
-      {/* Placeholder flag */}
-      <section className="mx-auto max-w-7xl px-6 pt-10 lg:px-10">
-        <div className="rounded-md border border-[color:var(--gold-deep)]/40 bg-[color:var(--gold-soft)]/15 px-4 py-3 text-sm text-foreground/80">
-          <strong className="font-medium text-[color:var(--navy)]">
-            Illustrative content.
-          </strong>{" "}
-          The itinerary, duration, and logistics below are examples — real
-          retreats are designed to your team in a discovery call.
-        </div>
-      </section>
+      {/* Placeholder flag — only for entries whose content is still pending */}
+      {retreat.isPlaceholder && (
+        <section className="mx-auto max-w-7xl px-6 pt-10 lg:px-10">
+          <div className="rounded-md border border-[color:var(--gold-deep)]/40 bg-[color:var(--gold-soft)]/15 px-4 py-3 text-sm text-foreground/80">
+            <strong className="font-medium text-[color:var(--navy)]">
+              Illustrative content.
+            </strong>{" "}
+            Real program details are pending. Nothing on this page describes a
+            specific bookable offering yet.
+          </div>
+        </section>
+      )}
+
 
       {/* Overview + logistics sidebar */}
       <section className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
@@ -186,19 +191,25 @@ function RetreatDetailPage() {
       </section>
 
       {/* Facilitators */}
-      {facilitators.length > 0 && (
+      {(facilitators.length > 0 || retreat.facilitatorsNote) && (
         <section className="border-t border-border">
           <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-28">
             <p className="font-eyebrow text-muted-foreground">Facilitators</p>
             <h2 className="mt-3 font-display text-3xl">Who leads the room</h2>
-            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {facilitators.map((f) => (
-                <ExpertCard key={f.slug} expert={f} eyebrow="Facilitator" />
-              ))}
-            </div>
+            {retreat.facilitatorsNote && (
+              <p className="mt-4 max-w-2xl text-foreground/80">{retreat.facilitatorsNote}</p>
+            )}
+            {facilitators.length > 0 && (
+              <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {facilitators.map((f) => (
+                  <ExpertCard key={f.slug} expert={f} eyebrow="Facilitator" />
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
+
 
       {/* CTA — routes to the same corporate inquiry flow as /corporate */}
       <section className="border-t border-border bg-[color:var(--navy)] text-[color:var(--cream)]">
