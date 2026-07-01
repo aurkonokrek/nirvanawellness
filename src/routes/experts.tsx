@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowUpRight, MapPin } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { FlowerMark } from "@/components/FlowerMark";
 import { EXPERTS, EXPERT_FILTERS, type Expert } from "@/data/experts";
 
 export const Route = createFileRoute("/experts")({
