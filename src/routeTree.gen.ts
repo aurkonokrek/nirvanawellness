@@ -16,11 +16,15 @@ import { Route as BookRouteImport } from './routes/book'
 import { Route as ApproachRouteImport } from './routes/approach'
 import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as ExpertsIndexRouteImport } from './routes/experts.index'
 import { Route as RetreatsSlugRouteImport } from './routes/retreats.$slug'
+import { Route as ResourcesTestsRouteImport } from './routes/resources.tests'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ResourcesTestsIndexRouteImport } from './routes/resources.tests.index'
+import { Route as ResourcesTestsSlugRouteImport } from './routes/resources.tests.$slug'
 
 const RetreatsRoute = RetreatsRouteImport.update({
   id: '/retreats',
@@ -57,6 +61,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResourcesIndexRoute = ResourcesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ResourcesRoute,
+} as any)
 const ExpertsIndexRoute = ExpertsIndexRouteImport.update({
   id: '/experts/',
   path: '/experts/',
@@ -66,6 +75,11 @@ const RetreatsSlugRoute = RetreatsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => RetreatsRoute,
+} as any)
+const ResourcesTestsRoute = ResourcesTestsRouteImport.update({
+  id: '/tests',
+  path: '/tests',
+  getParentRoute: () => ResourcesRoute,
 } as any)
 const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   id: '/$slug',
@@ -82,6 +96,16 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResourcesTestsIndexRoute = ResourcesTestsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ResourcesTestsRoute,
+} as any)
+const ResourcesTestsSlugRoute = ResourcesTestsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ResourcesTestsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -94,8 +118,12 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/resources/tests': typeof ResourcesTestsRouteWithChildren
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts/': typeof ExpertsIndexRoute
+  '/resources/': typeof ResourcesIndexRoute
+  '/resources/tests/$slug': typeof ResourcesTestsSlugRoute
+  '/resources/tests/': typeof ResourcesTestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -103,13 +131,15 @@ export interface FileRoutesByTo {
   '/approach': typeof ApproachRoute
   '/book': typeof BookRoute
   '/corporate': typeof CorporateRoute
-  '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts': typeof ExpertsIndexRoute
+  '/resources': typeof ResourcesIndexRoute
+  '/resources/tests/$slug': typeof ResourcesTestsSlugRoute
+  '/resources/tests': typeof ResourcesTestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -123,8 +153,12 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/resources/tests': typeof ResourcesTestsRouteWithChildren
   '/retreats/$slug': typeof RetreatsSlugRoute
   '/experts/': typeof ExpertsIndexRoute
+  '/resources/': typeof ResourcesIndexRoute
+  '/resources/tests/$slug': typeof ResourcesTestsSlugRoute
+  '/resources/tests/': typeof ResourcesTestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -139,8 +173,12 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
+    | '/resources/tests'
     | '/retreats/$slug'
     | '/experts/'
+    | '/resources/'
+    | '/resources/tests/$slug'
+    | '/resources/tests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -148,13 +186,15 @@ export interface FileRouteTypes {
     | '/approach'
     | '/book'
     | '/corporate'
-    | '/resources'
     | '/retreats'
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/retreats/$slug'
     | '/experts'
+    | '/resources'
+    | '/resources/tests/$slug'
+    | '/resources/tests'
   id:
     | '__root__'
     | '/'
@@ -167,8 +207,12 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
+    | '/resources/tests'
     | '/retreats/$slug'
     | '/experts/'
+    | '/resources/'
+    | '/resources/tests/$slug'
+    | '/resources/tests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -235,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resources/': {
+      id: '/resources/'
+      path: '/'
+      fullPath: '/resources/'
+      preLoaderRoute: typeof ResourcesIndexRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
     '/experts/': {
       id: '/experts/'
       path: '/experts'
@@ -248,6 +299,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/retreats/$slug'
       preLoaderRoute: typeof RetreatsSlugRouteImport
       parentRoute: typeof RetreatsRoute
+    }
+    '/resources/tests': {
+      id: '/resources/tests'
+      path: '/tests'
+      fullPath: '/resources/tests'
+      preLoaderRoute: typeof ResourcesTestsRouteImport
+      parentRoute: typeof ResourcesRoute
     }
     '/resources/$slug': {
       id: '/resources/$slug'
@@ -270,15 +328,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resources/tests/': {
+      id: '/resources/tests/'
+      path: '/'
+      fullPath: '/resources/tests/'
+      preLoaderRoute: typeof ResourcesTestsIndexRouteImport
+      parentRoute: typeof ResourcesTestsRoute
+    }
+    '/resources/tests/$slug': {
+      id: '/resources/tests/$slug'
+      path: '/$slug'
+      fullPath: '/resources/tests/$slug'
+      preLoaderRoute: typeof ResourcesTestsSlugRouteImport
+      parentRoute: typeof ResourcesTestsRoute
+    }
   }
 }
 
+interface ResourcesTestsRouteChildren {
+  ResourcesTestsSlugRoute: typeof ResourcesTestsSlugRoute
+  ResourcesTestsIndexRoute: typeof ResourcesTestsIndexRoute
+}
+
+const ResourcesTestsRouteChildren: ResourcesTestsRouteChildren = {
+  ResourcesTestsSlugRoute: ResourcesTestsSlugRoute,
+  ResourcesTestsIndexRoute: ResourcesTestsIndexRoute,
+}
+
+const ResourcesTestsRouteWithChildren = ResourcesTestsRoute._addFileChildren(
+  ResourcesTestsRouteChildren,
+)
+
 interface ResourcesRouteChildren {
   ResourcesSlugRoute: typeof ResourcesSlugRoute
+  ResourcesTestsRoute: typeof ResourcesTestsRouteWithChildren
+  ResourcesIndexRoute: typeof ResourcesIndexRoute
 }
 
 const ResourcesRouteChildren: ResourcesRouteChildren = {
   ResourcesSlugRoute: ResourcesSlugRoute,
+  ResourcesTestsRoute: ResourcesTestsRouteWithChildren,
+  ResourcesIndexRoute: ResourcesIndexRoute,
 }
 
 const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
@@ -312,3 +402,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

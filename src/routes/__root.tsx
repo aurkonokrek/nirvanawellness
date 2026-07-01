@@ -4,11 +4,12 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Menu, X, Facebook, Instagram, Youtube } from "lucide-react";
+import { Menu, X, Facebook, Instagram, Youtube, ChevronDown } from "lucide-react";
 import { ChatWidget } from "@/components/ChatWidget";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
@@ -17,13 +18,24 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import nirvanaLogo from "@/assets/nirvana-logo.png";
 
-const NAV = [
+type NavItem =
+  | { to: string; label: string }
+  | { label: string; children: { to: string; label: string }[] };
+
+const NAV: readonly NavItem[] = [
   { to: "/approach", label: "Approach" },
   { to: "/experts", label: "Experts" },
   { to: "/activities", label: "Activities" },
   { to: "/retreats", label: "Retreats" },
   { to: "/corporate", label: "Corporate" },
-  { to: "/resources", label: "Journal" },
+  {
+    label: "Resources",
+    children: [
+      { to: "/resources/tests", label: "Tests & Games" },
+      { to: "/resources", label: "Journal" },
+      { to: "/resources", label: "Creative Creations" },
+    ],
+  },
 ] as const;
 
 function NotFoundComponent() {
@@ -136,23 +148,26 @@ function Header() {
           </span>
         </Link>
         <nav className="hidden items-center gap-8 lg:flex">
-          {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="group relative py-1 text-sm text-foreground/70 transition-colors hover:text-foreground"
-              activeProps={{
-                className:
-                  "text-[color:var(--navy)] font-medium",
-              }}
-            >
-              {item.label}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-[2px] scale-x-0 bg-gold-gradient transition-transform duration-300 origin-left group-hover:scale-x-100 group-data-[status=active]:scale-x-100"
-              />
-            </Link>
-          ))}
+          {NAV.map((item) =>
+            "children" in item ? (
+              <NavDropdown key={item.label} item={item} />
+            ) : (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="group relative py-1 text-sm text-foreground/70 transition-colors hover:text-foreground"
+                activeProps={{
+                  className: "text-[color:var(--navy)] font-medium",
+                }}
+              >
+                {item.label}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-[2px] scale-x-0 bg-gold-gradient transition-transform duration-300 origin-left group-hover:scale-x-100 group-data-[status=active]:scale-x-100"
+                />
+              </Link>
+            ),
+          )}
         </nav>
 
         <div className="hidden lg:block">
@@ -175,20 +190,43 @@ function Header() {
       {open && (
         <div className="border-t border-border/60 bg-background lg:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-4">
-            {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted"
-                activeProps={{
-                  className:
-                    "rounded-md px-2 py-2 text-sm text-[color:var(--navy)] font-medium bg-[color:var(--gold-soft)]/25",
-                }}
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {NAV.map((item) =>
+              "children" in item ? (
+                <div key={item.label} className="mt-1">
+                  <p className="px-2 pb-1 pt-2 font-eyebrow text-[10px] tracking-[0.22em] text-muted-foreground">
+                    {item.label}
+                  </p>
+                  {item.children.map((c, i) => (
+                    <Link
+                      key={`${c.label}-${i}`}
+                      to={c.to}
+                      className="block rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted"
+                      activeProps={{
+                        className:
+                          "block rounded-md px-2 py-2 text-sm text-[color:var(--navy)] font-medium bg-[color:var(--gold-soft)]/25",
+                      }}
+                      activeOptions={{ exact: true }}
+                      onClick={() => setOpen(false)}
+                    >
+                      {c.label}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted"
+                  activeProps={{
+                    className:
+                      "rounded-md px-2 py-2 text-sm text-[color:var(--navy)] font-medium bg-[color:var(--gold-soft)]/25",
+                  }}
+                  onClick={() => setOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
 
             <Link
               to="/book"
@@ -201,6 +239,82 @@ function Header() {
         </div>
       )}
     </header>
+  );
+}
+
+function NavDropdown({
+  item,
+}: {
+  item: { label: string; children: { to: string; label: string }[] };
+}) {
+  const [open, setOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isActive = item.children.some(
+    (c) => pathname === c.to || pathname.startsWith(c.to + "/"),
+  );
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="true"
+        aria-expanded={open}
+        className={
+          "group relative inline-flex items-center gap-1 py-1 text-sm transition-colors hover:text-foreground " +
+          (isActive
+            ? "font-medium text-[color:var(--navy)]"
+            : "text-foreground/70")
+        }
+      >
+        {item.label}
+        <ChevronDown
+          className={
+            "h-3.5 w-3.5 transition-transform " + (open ? "rotate-180" : "")
+          }
+          aria-hidden="true"
+        />
+        <span
+          aria-hidden="true"
+          className={
+            "pointer-events-none absolute inset-x-0 -bottom-0.5 h-[2px] bg-gold-gradient transition-transform duration-300 origin-left " +
+            (isActive
+              ? "scale-x-100"
+              : "scale-x-0 group-hover:scale-x-100")
+          }
+        />
+      </button>
+
+      {open && (
+        <div className="absolute left-1/2 top-full z-50 pt-3 -translate-x-1/2">
+          <div className="min-w-[220px] rounded-md border border-border bg-background/95 py-2 shadow-lg backdrop-blur">
+            {item.children.map((c, i) => {
+              const active =
+                pathname === c.to || pathname.startsWith(c.to + "/");
+              return (
+                <Link
+                  key={`${c.label}-${i}`}
+                  to={c.to}
+                  onClick={() => setOpen(false)}
+                  className={
+                    "block px-4 py-2 text-sm transition-colors " +
+                    (active
+                      ? "bg-[color:var(--gold-soft)]/25 text-[color:var(--navy)] font-medium"
+                      : "text-foreground/80 hover:bg-muted")
+                  }
+                >
+                  {c.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
