@@ -303,6 +303,8 @@ function RootComponent() {
         </main>
         <Footer />
       </div>
+      <ScrollToTop />
+      <ChatWidget />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
