@@ -178,11 +178,16 @@ function Header() {
                 key={item.to}
                 to={item.to}
                 className="rounded-md px-2 py-2 text-sm text-foreground/80 hover:bg-muted"
+                activeProps={{
+                  className:
+                    "rounded-md px-2 py-2 text-sm text-[color:var(--navy)] font-medium bg-[color:var(--gold-soft)]/25",
+                }}
                 onClick={() => setOpen(false)}
               >
                 {item.label}
               </Link>
             ))}
+
             <Link
               to="/book"
               onClick={() => setOpen(false)}
