@@ -56,12 +56,13 @@ function RetreatDetailPage() {
 
             Retreat{retreat.isPlaceholder ? " · Illustrative" : ""}
           </p>
-          <h1 className="mt-5 max-w-4xl font-display text-5xl leading-[1.05] md:text-6xl">
+          <h1 className="animate-fade-up animate-fade-up-delay-1 mt-5 max-w-4xl font-display text-5xl leading-[1.05] md:text-6xl">
             {retreat.title}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg italic text-[color:var(--sand)]">
+          <p className="animate-fade-up animate-fade-up-delay-2 mt-6 max-w-2xl text-lg italic text-[color:var(--sand)]">
             {retreat.tagline}
           </p>
+
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
               to="/book"
