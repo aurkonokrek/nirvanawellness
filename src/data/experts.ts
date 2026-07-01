@@ -110,6 +110,8 @@ export const EXPERTS: Expert[] = [
       "French diplomat. Served several years at the Crisis Center in Paris and has been posted in China, India, Turkey, Slovakia, and Bangladesh. Holds a Master's degree in Law and Economy, and has been certified in Mindfulness and Heartfulness meditation for the past 20 years.",
       "Closely associated with the Heartfulness Institute.",
     ],
+    experience: "20 years",
+    education: ["Master's — Law and Economy"],
     credentials: [
       "20 years — certified in Mindfulness & Heartfulness meditation",
       "Master's — Law and Economy",
