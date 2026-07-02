@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
-import { FlowerMark } from "@/components/FlowerMark";
+import mindfulYouAsset from "@/assets/mindful-you.jpg.asset.json";
 
 export const Route = createFileRoute("/approach")({
   head: () => ({
@@ -151,9 +151,13 @@ function ApproachPage() {
               </p>
               <div
                 aria-hidden="true"
-                className="mt-10 flex items-center justify-center rounded-full border border-border/60 bg-background p-10"
+                className="mt-10 overflow-hidden rounded-3xl border border-border/60 bg-background"
               >
-                <FlowerMark className="h-32 w-32 text-[color:var(--gold)] opacity-80" />
+                <img
+                  src={mindfulYouAsset.url}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
               </div>
               <p className="mt-4 text-center font-eyebrow text-muted-foreground">
                 Mindful You · at the centre
