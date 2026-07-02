@@ -162,7 +162,7 @@ function Header() {
               <Link
                 key={item.to}
                 to={item.to}
-                className="group relative py-1 text-sm text-foreground/70 transition-colors hover:text-foreground"
+                className="group relative py-1 text-sm text-foreground/70 transition-colors hover:text-[color:var(--gold)]"
                 activeProps={{
                   className: "text-[color:var(--navy)] font-medium",
                 }}
