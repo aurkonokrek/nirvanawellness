@@ -162,7 +162,7 @@ function Header() {
               <Link
                 key={item.to}
                 to={item.to}
-                className="group relative py-1 text-sm text-foreground/70 transition-colors hover:text-foreground"
+                className="group relative py-1 text-sm text-foreground/70 transition-colors hover:text-[color:var(--gold)]"
                 activeProps={{
                   className: "text-[color:var(--navy)] font-medium",
                 }}
@@ -355,7 +355,7 @@ function NavDropdown({
           }
         }}
         className={
-          "relative inline-flex cursor-pointer items-center gap-1 py-1 text-sm transition-colors hover:text-foreground " +
+          "relative inline-flex cursor-pointer items-center gap-1 py-1 text-sm transition-colors hover:text-[color:var(--gold)] " +
           (isActive
             ? "font-medium text-[color:var(--navy)]"
             : "text-foreground/70")
