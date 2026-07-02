@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Menu, X, Facebook, Instagram, Youtube, ChevronDown } from "lucide-react";
 import { BrandLoader } from "@/components/BrandLoader";
 import { ChatWidget } from "@/components/ChatWidget";
@@ -255,6 +255,11 @@ function NavDropdown({
   item: { label: string; children: { to: string; label: string }[] };
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const isTouch = useRef(false);
+
   const isChildActive = (to: string) => {
     if (to === "/resources") {
       return (
@@ -268,12 +273,89 @@ function NavDropdown({
   };
   const isActive = item.children.some((c) => isChildActive(c.to));
 
+  const clearClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+  const scheduleClose = () => {
+    clearClose();
+    closeTimer.current = setTimeout(() => setOpen(false), 180);
+  };
+
+  // Close route change
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Outside click / touch closes
+  useEffect(() => {
+    if (!open) return;
+    const onDocDown = (e: MouseEvent | TouchEvent) => {
+      if (!containerRef.current) return;
+      if (!containerRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDocDown);
+    document.addEventListener("touchstart", onDocDown, { passive: true });
+    return () => {
+      document.removeEventListener("mousedown", onDocDown);
+      document.removeEventListener("touchstart", onDocDown);
+    };
+  }, [open]);
+
+  useEffect(() => () => clearClose(), []);
+
   return (
-    <details className="group relative">
-      <summary
-        aria-haspopup="true"
+    <div
+      ref={containerRef}
+      className="relative"
+      onMouseEnter={() => {
+        if (isTouch.current) return;
+        clearClose();
+        setOpen(true);
+      }}
+      onMouseLeave={() => {
+        if (isTouch.current) return;
+        scheduleClose();
+      }}
+      onFocus={() => {
+        clearClose();
+        setOpen(true);
+      }}
+      onBlur={(e) => {
+        if (!containerRef.current?.contains(e.relatedTarget as Node)) {
+          setOpen(false);
+        }
+      }}
+    >
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onPointerDown={(e) => {
+          if (e.pointerType === "touch" || e.pointerType === "pen") {
+            isTouch.current = true;
+            e.preventDefault();
+            setOpen((v) => !v);
+          }
+        }}
+        onClick={(e) => {
+          // For mouse users, click also toggles (accessibility / keyboard)
+          if (!isTouch.current) {
+            setOpen((v) => !v);
+          }
+          e.preventDefault();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") setOpen(false);
+          if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen(true);
+          }
+        }}
         className={
-          "relative inline-flex cursor-pointer list-none items-center gap-1 py-1 text-sm transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden " +
+          "relative inline-flex cursor-pointer items-center gap-1 py-1 text-sm transition-colors hover:text-foreground " +
           (isActive
             ? "font-medium text-[color:var(--navy)]"
             : "text-foreground/70")
@@ -281,44 +363,52 @@ function NavDropdown({
       >
         {item.label}
         <ChevronDown
-          className="h-3.5 w-3.5 transition-transform group-open:rotate-180"
+          className={
+            "h-3.5 w-3.5 transition-transform " + (open ? "rotate-180" : "")
+          }
           aria-hidden="true"
         />
         <span
           aria-hidden="true"
           className={
             "pointer-events-none absolute inset-x-0 -bottom-0.5 h-[2px] bg-gold-gradient transition-transform duration-300 origin-left " +
-            (isActive
-              ? "scale-x-100"
-              : "scale-x-0 group-hover:scale-x-100")
+            (isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100")
           }
         />
-      </summary>
+      </button>
 
-      <div className="absolute left-1/2 top-full z-50 hidden -translate-x-1/2 pt-3 group-open:block group-hover:block group-focus-within:block">
-        <div className="min-w-[220px] rounded-md border border-border bg-background/95 py-2 shadow-lg backdrop-blur">
-          {item.children.map((c, i) => {
-            const active = isChildActive(c.to);
-            return (
-              <Link
-                key={`${c.label}-${i}`}
-                to={c.to}
-                className={
-                  "block px-4 py-2 text-sm transition-colors " +
-                  (active
-                    ? "bg-[color:var(--gold-soft)]/25 text-[color:var(--navy)] font-medium"
-                    : "text-foreground/80 hover:bg-muted")
-                }
-              >
-                {c.label}
-              </Link>
-            );
-          })}
+      {open && (
+        <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3">
+          <div
+            role="menu"
+            className="min-w-[220px] rounded-md border border-border bg-background/95 py-2 shadow-lg backdrop-blur"
+          >
+            {item.children.map((c, i) => {
+              const active = isChildActive(c.to);
+              return (
+                <Link
+                  key={`${c.label}-${i}`}
+                  to={c.to}
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                  className={
+                    "block px-4 py-2 text-sm transition-colors " +
+                    (active
+                      ? "bg-[color:var(--gold-soft)]/25 text-[color:var(--navy)] font-medium"
+                      : "text-foreground/80 hover:bg-muted")
+                  }
+                >
+                  {c.label}
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </details>
+      )}
+    </div>
   );
 }
+
 
 function Footer() {
   return (
