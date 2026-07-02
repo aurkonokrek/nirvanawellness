@@ -256,9 +256,9 @@ function NavDropdown({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
-  const closeTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
-  const isTouch = React.useRef(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const isTouch = useRef(false);
 
   const isChildActive = (to: string) => {
     if (to === "/resources") {
