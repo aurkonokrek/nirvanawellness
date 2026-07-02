@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
-import { FlowerMark } from "@/components/FlowerMark";
+import mindfulYouAsset from "@/assets/mindful-you.jpg.asset.json";
 
 export const Route = createFileRoute("/approach")({
   head: () => ({
