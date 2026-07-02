@@ -161,19 +161,34 @@ a[href*="lovable.dev?utm"],
     border-image: linear-gradient(120deg, #B8862E, #E8C878) 1;
   }
 
-  /* Global link hover — subtle gold tint on every clickable text.
-     Uses :where() so specificity is 0; any explicit hover:text-* utility
-     on a specific link (e.g. footer sand→gold-soft) wins automatically.
-     Filled button-style links opt out via .no-link-hover. */
-  :where(a) {
+  /* Global link hover — gold tint on every clickable text.
+     Real `a` selector (specificity 0,1,1) beats Tailwind color utilities
+     like `text-foreground` (0,1,0). `!important` guarantees the hover
+     wins over any inline/utility color. Filled buttons opt out via
+     .no-link-hover. */
+  a:not(.no-link-hover) {
     transition: color 180ms ease;
   }
-  :where(a):not(.no-link-hover):hover {
-    color: var(--gold);
+  a:not(.no-link-hover):hover,
+  a:not(.no-link-hover):focus-visible {
+    color: var(--gold) !important;
   }
   /* On navy/dark surfaces, prefer the softer gold for contrast. */
-  :where(.bg-\[color\:var\(--navy\)\], .bg-navy, footer) :where(a):not(.no-link-hover):hover {
-    color: var(--gold-soft);
+  .bg-navy a:not(.no-link-hover):hover,
+  .bg-navy a:not(.no-link-hover):focus-visible,
+  footer a:not(.no-link-hover):hover,
+  footer a:not(.no-link-hover):focus-visible,
+  [class*="bg-[color:var(--navy)"] a:not(.no-link-hover):hover,
+  [class*="bg-[color:var(--navy)"] a:not(.no-link-hover):focus-visible {
+    color: var(--gold-soft) !important;
+  }
+  /* Buttons styled as text links (e.g. nav dropdown trigger). */
+  button.link-hover {
+    transition: color 180ms ease;
+  }
+  button.link-hover:hover,
+  button.link-hover:focus-visible {
+    color: var(--gold) !important;
   }
 
   /* Subtle editorial entrance — used once on load, never on scroll */
