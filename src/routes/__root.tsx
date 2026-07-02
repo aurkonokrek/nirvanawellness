@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Menu, X, Facebook, Instagram, Youtube, ChevronDown } from "lucide-react";
+import { BrandLoader } from "@/components/BrandLoader";
 import { ChatWidget } from "@/components/ChatWidget";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
@@ -420,6 +421,7 @@ function RootComponent() {
       </div>
       <ScrollToTop />
       <ChatWidget />
+      <BrandLoader />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
