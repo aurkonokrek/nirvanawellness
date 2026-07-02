@@ -421,6 +421,7 @@ function RootComponent() {
       </div>
       <ScrollToTop />
       <ChatWidget />
+      <BrandLoader />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
