@@ -161,6 +161,21 @@ a[href*="lovable.dev?utm"],
     border-image: linear-gradient(120deg, #B8862E, #E8C878) 1;
   }
 
+  /* Global link hover — subtle gold tint on every clickable text.
+     Uses :where() so specificity is 0; any explicit hover:text-* utility
+     on a specific link (e.g. footer sand→gold-soft) wins automatically.
+     Filled button-style links opt out via .no-link-hover. */
+  :where(a) {
+    transition: color 180ms ease;
+  }
+  :where(a):not(.no-link-hover):hover {
+    color: var(--gold);
+  }
+  /* On navy/dark surfaces, prefer the softer gold for contrast. */
+  :where(.bg-\[color\:var\(--navy\)\], .bg-navy, footer) :where(a):not(.no-link-hover):hover {
+    color: var(--gold-soft);
+  }
+
   /* Subtle editorial entrance — used once on load, never on scroll */
   @keyframes nirvana-fade-up {
     0%   { opacity: 0; transform: translate3d(0, 14px, 0); }
