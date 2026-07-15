@@ -154,7 +154,7 @@ function ApproachPage() {
                 className="mt-10 overflow-hidden rounded-3xl border border-border/60 bg-background"
               >
                 <img
-                  src={mindfulYouAsset.url}
+                  src={mindfulYouAsset}
                   alt=""
                   className="h-full w-full object-cover"
                 />
