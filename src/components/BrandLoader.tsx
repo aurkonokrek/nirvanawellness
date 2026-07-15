@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import markAsset from "@/assets/nirvana-mark.gif.asset.json";
+import markAsset from "@/assets/nirvana-mark.gif";
 import heroSanctuary from "@/assets/hero-sanctuary.jpg";
 
 const SESSION_KEY = "nirvana:loader-seen";
