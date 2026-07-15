@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
-import mindfulYouAsset from "@/assets/mindful-you.jpg.asset.json";
+import mindfulYouAsset from "@/assets/mindful-you.jpg";
 
 export const Route = createFileRoute("/approach")({
   head: () => ({
