@@ -85,7 +85,7 @@ export function BrandLoader() {
 
       <div className="relative flex flex-col items-center gap-6">
         <img
-          src={markAsset.url}
+          src={markAsset}
           alt=""
           width={160}
           height={160}
