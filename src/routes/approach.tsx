@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
-import mindfulYouAsset from "@/assets/mindful-you.jpg.asset.json";
+import mindfulYouAsset from "@/assets/mindful-you.jpg";
 
 export const Route = createFileRoute("/approach")({
   head: () => ({
@@ -154,7 +154,7 @@ function ApproachPage() {
                 className="mt-10 overflow-hidden rounded-3xl border border-border/60 bg-background"
               >
                 <img
-                  src={mindfulYouAsset.url}
+                  src={mindfulYouAsset}
                   alt=""
                   className="h-full w-full object-cover"
                 />
