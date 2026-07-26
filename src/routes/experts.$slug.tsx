@@ -310,13 +310,10 @@ function BookingWidget({
       session_type: sessionType,
       preferred_format: format,
       timezone: tz,
-      notes: [
-        `Practitioner requested: ${expertName} (${expertSlug})`,
-        preferredDate ? `Preferred date: ${preferredDate}` : null,
-        notes || null,
-      ]
-        .filter(Boolean)
-        .join("\n\n"),
+      preferred_date: preferredDate || null,
+      expert_slug: expertSlug,
+      expert_name: expertName,
+      notes: notes || null,
     });
     setSubmitting(false);
     if (error) {

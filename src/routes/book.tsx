@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { toast } from "sonner";
 
-
 export const Route = createFileRoute("/book")({
   head: () => ({
     meta: [
@@ -50,7 +49,6 @@ function BookPage() {
           </p>
         </div>
       </section>
-
 
       <section className="mx-auto max-w-7xl px-6 pt-12 lg:px-10">
         <div className="grid gap-3 md:grid-cols-3">
@@ -151,6 +149,7 @@ function SessionForm() {
     e.preventDefault();
     if (submitting) return;
     const f = new FormData(e.currentTarget);
+    const preferredDateRaw = String(f.get("preferred_date") || "").trim();
     const payload = {
       name: String(f.get("name") || "").trim(),
       email: String(f.get("email") || "").trim(),
@@ -158,6 +157,7 @@ function SessionForm() {
       session_type: String(f.get("session_type") || "individual"),
       preferred_format: String(f.get("preferred_format") || "either"),
       timezone: tz || null,
+      preferred_date: preferredDateRaw || null,
       notes: String(f.get("notes") || "").trim() || null,
     };
     if (!payload.name || !payload.email) {
@@ -225,13 +225,18 @@ function SessionForm() {
             </select>
           </Field>
         </div>
-        <Field label="Timezone" hint={tz ? `Detected: ${tz} — change if needed` : "Select your timezone"}>
-          <select className={inputCls} value={tz} onChange={(e) => setTz(e.target.value)}>
-            {zoneOptions.map((z) => (
-              <option key={z} value={z}>{z}</option>
-            ))}
-          </select>
-        </Field>
+        <div className="grid gap-5 md:grid-cols-2">
+          <Field label="Timezone" hint={tz ? `Detected: ${tz} — change if needed` : "Select your timezone"}>
+            <select className={inputCls} value={tz} onChange={(e) => setTz(e.target.value)}>
+              {zoneOptions.map((z) => (
+                <option key={z} value={z}>{z}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Preferred date" hint="Optional — no conflict checking, we'll confirm manually">
+            <input name="preferred_date" type="date" className={inputCls} min={new Date().toISOString().split("T")[0]} />
+          </Field>
+        </div>
         <Field label="Anything you'd like us to know">
           <textarea name="notes" rows={4} className={inputCls} placeholder="Optional. As much or as little as you'd like." />
         </Field>
@@ -260,6 +265,7 @@ function CorporateForm() {
     e.preventDefault();
     if (submitting) return;
     const f = new FormData(e.currentTarget);
+    const preferredDateRaw = String(f.get("preferred_date") || "").trim();
     const payload = {
       name: String(f.get("name") || "").trim(),
       role: String(f.get("role") || "").trim() || null,
@@ -268,6 +274,7 @@ function CorporateForm() {
       team_size: String(f.get("team_size") || "") || null,
       program_interest: String(f.get("program_interest") || "") || null,
       context: String(f.get("context") || "").trim() || null,
+      preferred_date: preferredDateRaw || null,
     };
     if (!payload.name || !payload.organisation || !payload.work_email) {
       toast.error("Please add your name, organisation, and work email.");
@@ -336,6 +343,9 @@ function CorporateForm() {
         <Field label="Context">
           <textarea name="context" rows={4} className={inputCls} placeholder="Where is your team right now, and what would 'good' look like?" />
         </Field>
+        <Field label="Preferred date for discovery call" hint="Optional — no conflict checking, we'll confirm manually">
+          <input name="preferred_date" type="date" className={inputCls} min={new Date().toISOString().split("T")[0]} />
+        </Field>
         <button
           type="submit"
           disabled={submitting}
@@ -358,10 +368,12 @@ function ContactForm() {
     e.preventDefault();
     if (submitting) return;
     const f = new FormData(e.currentTarget);
+    const preferredDateRaw = String(f.get("preferred_date") || "").trim();
     const payload = {
       name: String(f.get("name") || "").trim(),
       email: String(f.get("email") || "").trim(),
       message: String(f.get("message") || "").trim(),
+      preferred_date: preferredDateRaw || null,
     };
     if (!payload.name || !payload.email || !payload.message) {
       toast.error("Please fill in every field.");
@@ -406,6 +418,9 @@ function ContactForm() {
           <Field label="Email"><input name="email" type="email" required className={inputCls} /></Field>
         </div>
         <Field label="Message"><textarea name="message" rows={5} required className={inputCls} /></Field>
+        <Field label="Preferred date" hint="Optional — if you have a timing preference">
+          <input name="preferred_date" type="date" className={inputCls} min={new Date().toISOString().split("T")[0]} />
+        </Field>
         <button
           type="submit"
           disabled={submitting}

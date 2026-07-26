@@ -9,48 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RetreatsRouteImport } from './routes/retreats'
-import { Route as ResourcesRouteImport } from './routes/resources'
-import { Route as CorporateRouteImport } from './routes/corporate'
-import { Route as BookRouteImport } from './routes/book'
-import { Route as ApproachRouteImport } from './routes/approach'
-import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RetreatsIndexRouteImport } from './routes/retreats.index'
-import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
-import { Route as ExpertsIndexRouteImport } from './routes/experts.index'
-import { Route as RetreatsSlugRouteImport } from './routes/retreats.$slug'
-import { Route as ResourcesTestsRouteImport } from './routes/resources.tests'
-import { Route as ResourcesCreativeCreationsRouteImport } from './routes/resources.creative-creations'
-import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
-import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
+import { Route as ActivitiesRouteImport } from './routes/activities'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ApproachRouteImport } from './routes/approach'
+import { Route as BookRouteImport } from './routes/book'
+import { Route as CorporateRouteImport } from './routes/corporate'
+import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as RetreatsRouteImport } from './routes/retreats'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ExpertsIndexRouteImport } from './routes/experts.index'
+import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
+import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
+import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
+import { Route as ResourcesCreativeCreationsRouteImport } from './routes/resources.creative-creations'
+import { Route as ResourcesTestsRouteImport } from './routes/resources.tests'
+import { Route as RetreatsIndexRouteImport } from './routes/retreats.index'
+import { Route as RetreatsSlugRouteImport } from './routes/retreats.$slug'
 import { Route as ResourcesTestsIndexRouteImport } from './routes/resources.tests.index'
 import { Route as ResourcesTestsSlugRouteImport } from './routes/resources.tests.$slug'
 
-const RetreatsRoute = RetreatsRouteImport.update({
-  id: '/retreats',
-  path: '/retreats',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CorporateRoute = CorporateRouteImport.update({
-  id: '/corporate',
-  path: '/corporate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BookRoute = BookRouteImport.update({
-  id: '/book',
-  path: '/book',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApproachRoute = ApproachRouteImport.update({
-  id: '/approach',
-  path: '/approach',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ActivitiesRoute = ActivitiesRouteImport.update({
@@ -58,34 +42,74 @@ const ActivitiesRoute = ActivitiesRouteImport.update({
   path: '/activities',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RetreatsIndexRoute = RetreatsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => RetreatsRoute,
+const ApproachRoute = ApproachRouteImport.update({
+  id: '/approach',
+  path: '/approach',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const ResourcesIndexRoute = ResourcesIndexRouteImport.update({
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CorporateRoute = CorporateRouteImport.update({
+  id: '/corporate',
+  path: '/corporate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RetreatsRoute = RetreatsRouteImport.update({
+  id: '/retreats',
+  path: '/retreats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => ResourcesRoute,
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ExpertsIndexRoute = ExpertsIndexRouteImport.update({
   id: '/experts/',
   path: '/experts/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RetreatsSlugRoute = RetreatsSlugRouteImport.update({
+const ExpertsSlugRoute = ExpertsSlugRouteImport.update({
+  id: '/experts/$slug',
+  path: '/experts/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesIndexRoute = ResourcesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ResourcesRoute,
+} as any)
+const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
-  getParentRoute: () => RetreatsRoute,
-} as any)
-const ResourcesTestsRoute = ResourcesTestsRouteImport.update({
-  id: '/tests',
-  path: '/tests',
   getParentRoute: () => ResourcesRoute,
 } as any)
 const ResourcesCreativeCreationsRoute =
@@ -94,20 +118,20 @@ const ResourcesCreativeCreationsRoute =
     path: '/creative-creations',
     getParentRoute: () => ResourcesRoute,
   } as any)
-const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
+const ResourcesTestsRoute = ResourcesTestsRouteImport.update({
+  id: '/tests',
+  path: '/tests',
   getParentRoute: () => ResourcesRoute,
 } as any)
-const ExpertsSlugRoute = ExpertsSlugRouteImport.update({
-  id: '/experts/$slug',
-  path: '/experts/$slug',
-  getParentRoute: () => rootRouteImport,
+const RetreatsIndexRoute = RetreatsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RetreatsRoute,
 } as any)
-const ApiChatRoute = ApiChatRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
-  getParentRoute: () => rootRouteImport,
+const RetreatsSlugRoute = RetreatsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => RetreatsRoute,
 } as any)
 const ResourcesTestsIndexRoute = ResourcesTestsIndexRouteImport.update({
   id: '/',
@@ -123,17 +147,21 @@ const ResourcesTestsSlugRoute = ResourcesTestsSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/activities': typeof ActivitiesRoute
+  '/admin': typeof AdminRouteWithChildren
   '/approach': typeof ApproachRoute
   '/book': typeof BookRoute
   '/corporate': typeof CorporateRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/resources/creative-creations': typeof ResourcesCreativeCreationsRoute
   '/resources/tests': typeof ResourcesTestsRouteWithChildren
   '/retreats/$slug': typeof RetreatsSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/experts/': typeof ExpertsIndexRoute
   '/resources/': typeof ResourcesIndexRoute
   '/retreats/': typeof RetreatsIndexRoute
@@ -146,11 +174,14 @@ export interface FileRoutesByTo {
   '/approach': typeof ApproachRoute
   '/book': typeof BookRoute
   '/corporate': typeof CorporateRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/resources/creative-creations': typeof ResourcesCreativeCreationsRoute
   '/retreats/$slug': typeof RetreatsSlugRoute
+  '/admin': typeof AdminIndexRoute
   '/experts': typeof ExpertsIndexRoute
   '/resources': typeof ResourcesIndexRoute
   '/retreats': typeof RetreatsIndexRoute
@@ -161,17 +192,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/activities': typeof ActivitiesRoute
+  '/admin': typeof AdminRouteWithChildren
   '/approach': typeof ApproachRoute
   '/book': typeof BookRoute
   '/corporate': typeof CorporateRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/api/chat': typeof ApiChatRoute
   '/experts/$slug': typeof ExpertsSlugRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/resources/creative-creations': typeof ResourcesCreativeCreationsRoute
   '/resources/tests': typeof ResourcesTestsRouteWithChildren
   '/retreats/$slug': typeof RetreatsSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/experts/': typeof ExpertsIndexRoute
   '/resources/': typeof ResourcesIndexRoute
   '/retreats/': typeof RetreatsIndexRoute
@@ -183,17 +218,21 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/activities'
+    | '/admin'
     | '/approach'
     | '/book'
     | '/corporate'
     | '/resources'
     | '/retreats'
+    | '/admin/analytics'
+    | '/admin/settings'
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/resources/creative-creations'
     | '/resources/tests'
     | '/retreats/$slug'
+    | '/admin/'
     | '/experts/'
     | '/resources/'
     | '/retreats/'
@@ -206,11 +245,14 @@ export interface FileRouteTypes {
     | '/approach'
     | '/book'
     | '/corporate'
+    | '/admin/analytics'
+    | '/admin/settings'
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/resources/creative-creations'
     | '/retreats/$slug'
+    | '/admin'
     | '/experts'
     | '/resources'
     | '/retreats'
@@ -220,17 +262,21 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/activities'
+    | '/admin'
     | '/approach'
     | '/book'
     | '/corporate'
     | '/resources'
     | '/retreats'
+    | '/admin/analytics'
+    | '/admin/settings'
     | '/api/chat'
     | '/experts/$slug'
     | '/resources/$slug'
     | '/resources/creative-creations'
     | '/resources/tests'
     | '/retreats/$slug'
+    | '/admin/'
     | '/experts/'
     | '/resources/'
     | '/retreats/'
@@ -241,6 +287,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ActivitiesRoute: typeof ActivitiesRoute
+  AdminRoute: typeof AdminRouteWithChildren
   ApproachRoute: typeof ApproachRoute
   BookRoute: typeof BookRoute
   CorporateRoute: typeof CorporateRoute
@@ -253,39 +300,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/retreats': {
-      id: '/retreats'
-      path: '/retreats'
-      fullPath: '/retreats'
-      preLoaderRoute: typeof RetreatsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resources': {
-      id: '/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof ResourcesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/corporate': {
-      id: '/corporate'
-      path: '/corporate'
-      fullPath: '/corporate'
-      preLoaderRoute: typeof CorporateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/book': {
-      id: '/book'
-      path: '/book'
-      fullPath: '/book'
-      preLoaderRoute: typeof BookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/approach': {
-      id: '/approach'
-      path: '/approach'
-      fullPath: '/approach'
-      preLoaderRoute: typeof ApproachRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/activities': {
@@ -295,26 +314,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivitiesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/retreats/': {
-      id: '/retreats/'
-      path: '/'
-      fullPath: '/retreats/'
-      preLoaderRoute: typeof RetreatsIndexRouteImport
-      parentRoute: typeof RetreatsRoute
+    '/approach': {
+      id: '/approach'
+      path: '/approach'
+      fullPath: '/approach'
+      preLoaderRoute: typeof ApproachRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/resources/': {
-      id: '/resources/'
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/corporate': {
+      id: '/corporate'
+      path: '/corporate'
+      fullPath: '/corporate'
+      preLoaderRoute: typeof CorporateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/retreats': {
+      id: '/retreats'
+      path: '/retreats'
+      fullPath: '/retreats'
+      preLoaderRoute: typeof RetreatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
       path: '/'
-      fullPath: '/resources/'
-      preLoaderRoute: typeof ResourcesIndexRouteImport
-      parentRoute: typeof ResourcesRoute
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/experts/': {
       id: '/experts/'
@@ -323,25 +391,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExpertsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/retreats/$slug': {
-      id: '/retreats/$slug'
-      path: '/$slug'
-      fullPath: '/retreats/$slug'
-      preLoaderRoute: typeof RetreatsSlugRouteImport
-      parentRoute: typeof RetreatsRoute
+    '/experts/$slug': {
+      id: '/experts/$slug'
+      path: '/experts/$slug'
+      fullPath: '/experts/$slug'
+      preLoaderRoute: typeof ExpertsSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/resources/tests': {
-      id: '/resources/tests'
-      path: '/tests'
-      fullPath: '/resources/tests'
-      preLoaderRoute: typeof ResourcesTestsRouteImport
-      parentRoute: typeof ResourcesRoute
-    }
-    '/resources/creative-creations': {
-      id: '/resources/creative-creations'
-      path: '/creative-creations'
-      fullPath: '/resources/creative-creations'
-      preLoaderRoute: typeof ResourcesCreativeCreationsRouteImport
+    '/resources/': {
+      id: '/resources/'
+      path: '/'
+      fullPath: '/resources/'
+      preLoaderRoute: typeof ResourcesIndexRouteImport
       parentRoute: typeof ResourcesRoute
     }
     '/resources/$slug': {
@@ -351,19 +412,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResourcesSlugRouteImport
       parentRoute: typeof ResourcesRoute
     }
-    '/experts/$slug': {
-      id: '/experts/$slug'
-      path: '/experts/$slug'
-      fullPath: '/experts/$slug'
-      preLoaderRoute: typeof ExpertsSlugRouteImport
-      parentRoute: typeof rootRouteImport
+    '/resources/creative-creations': {
+      id: '/resources/creative-creations'
+      path: '/creative-creations'
+      fullPath: '/resources/creative-creations'
+      preLoaderRoute: typeof ResourcesCreativeCreationsRouteImport
+      parentRoute: typeof ResourcesRoute
     }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
-      parentRoute: typeof rootRouteImport
+    '/resources/tests': {
+      id: '/resources/tests'
+      path: '/tests'
+      fullPath: '/resources/tests'
+      preLoaderRoute: typeof ResourcesTestsRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
+    '/retreats/': {
+      id: '/retreats/'
+      path: '/'
+      fullPath: '/retreats/'
+      preLoaderRoute: typeof RetreatsIndexRouteImport
+      parentRoute: typeof RetreatsRoute
+    }
+    '/retreats/$slug': {
+      id: '/retreats/$slug'
+      path: '/$slug'
+      fullPath: '/retreats/$slug'
+      preLoaderRoute: typeof RetreatsSlugRouteImport
+      parentRoute: typeof RetreatsRoute
     }
     '/resources/tests/': {
       id: '/resources/tests/'
@@ -381,6 +456,20 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface ResourcesTestsRouteChildren {
   ResourcesTestsSlugRoute: typeof ResourcesTestsSlugRoute
@@ -431,6 +520,7 @@ const RetreatsRouteWithChildren = RetreatsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ActivitiesRoute: ActivitiesRoute,
+  AdminRoute: AdminRouteWithChildren,
   ApproachRoute: ApproachRoute,
   BookRoute: BookRoute,
   CorporateRoute: CorporateRoute,
@@ -443,3 +533,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

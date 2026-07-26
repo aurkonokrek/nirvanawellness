@@ -7,116 +7,256 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
-      contact_messages: {
+      session_requests: {
         Row: {
-          created_at: string
-          email: string
           id: string
-          message: string
           name: string
+          email: string
+          phone: string | null
+          session_type: string
+          preferred_format: string
+          timezone: string | null
+          preferred_date: string | null
+          expert_slug: string | null
+          expert_name: string | null
+          notes: string | null
           status: string
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          created_at?: string
-          email: string
           id?: string
-          message: string
           name: string
+          email: string
+          phone?: string | null
+          session_type?: string
+          preferred_format?: string
+          timezone?: string | null
+          preferred_date?: string | null
+          expert_slug?: string | null
+          expert_name?: string | null
+          notes?: string | null
           status?: string
+          created_at?: string
+          updated_at?: string
         }
         Update: {
-          created_at?: string
-          email?: string
           id?: string
-          message?: string
           name?: string
+          email?: string
+          phone?: string | null
+          session_type?: string
+          preferred_format?: string
+          timezone?: string | null
+          preferred_date?: string | null
+          expert_slug?: string | null
+          expert_name?: string | null
+          notes?: string | null
           status?: string
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
       corporate_inquiries: {
         Row: {
-          context: string | null
-          created_at: string
           id: string
           name: string
-          organisation: string
-          program_interest: string | null
           role: string | null
-          status: string
-          team_size: string | null
+          organisation: string
           work_email: string
+          team_size: string | null
+          program_interest: string | null
+          context: string | null
+          preferred_date: string | null
+          status: string
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          context?: string | null
-          created_at?: string
           id?: string
           name: string
-          organisation: string
-          program_interest?: string | null
           role?: string | null
-          status?: string
-          team_size?: string | null
+          organisation: string
           work_email: string
+          team_size?: string | null
+          program_interest?: string | null
+          context?: string | null
+          preferred_date?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
         }
         Update: {
-          context?: string | null
-          created_at?: string
           id?: string
           name?: string
-          organisation?: string
-          program_interest?: string | null
           role?: string | null
-          status?: string
-          team_size?: string | null
+          organisation?: string
           work_email?: string
+          team_size?: string | null
+          program_interest?: string | null
+          context?: string | null
+          preferred_date?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
-      session_requests: {
+      contact_messages: {
         Row: {
-          created_at: string
-          email: string
           id: string
           name: string
-          notes: string | null
-          phone: string | null
-          preferred_format: string
-          session_type: string
+          email: string
+          message: string
+          preferred_date: string | null
           status: string
-          timezone: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          created_at?: string
-          email: string
           id?: string
           name: string
-          notes?: string | null
-          phone?: string | null
-          preferred_format: string
-          session_type: string
+          email: string
+          message: string
+          preferred_date?: string | null
           status?: string
-          timezone?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
-          created_at?: string
-          email?: string
           id?: string
           name?: string
-          notes?: string | null
-          phone?: string | null
-          preferred_format?: string
-          session_type?: string
+          email?: string
+          message?: string
+          preferred_date?: string | null
           status?: string
-          timezone?: string | null
+          created_at?: string
+          updated_at?: string
         }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          user_id: string
+          role: "admin"
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          role: "admin"
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          role?: "admin"
+          created_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          id: string
+          email: string | null
+          display_name: string | null
+          created_at: string
+        }
+        Insert: {
+          id: string
+          email?: string | null
+          display_name?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string | null
+          display_name?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      notification_outbox: {
+        Row: {
+          id: string
+          source_type: string
+          source_id: string
+          event: string
+          payload: Json
+          status: string
+          created_at: string
+          sent_at: string | null
+        }
+        Insert: {
+          id?: string
+          source_type: string
+          source_id: string
+          event: string
+          payload?: Json
+          status?: string
+          created_at?: string
+          sent_at?: string | null
+        }
+        Update: {
+          id?: string
+          source_type?: string
+          source_id?: string
+          event?: string
+          payload?: Json
+          status?: string
+          created_at?: string
+          sent_at?: string | null
+        }
+        Relationships: []
+      }
+      analytics_events: {
+        Row: {
+          id: number
+          occurred_at: string
+          event_type: string
+          path: string
+          referrer_host: string | null
+          visitor_hash: string
+          country: string | null
+          device: string | null
+        }
+        Insert: {
+          occurred_at?: string
+          event_type?: string
+          path: string
+          referrer_host?: string | null
+          visitor_hash: string
+          country?: string | null
+          device?: string | null
+        }
+        Update: {
+          occurred_at?: string
+          event_type?: string
+          path?: string
+          referrer_host?: string | null
+          visitor_hash?: string
+          country?: string | null
+          device?: string | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: { key: string; value: string; updated_at: string }
+        Insert: { key: string; value?: string; updated_at?: string }
+        Update: { key?: string; value?: string; updated_at?: string }
+        Relationships: []
+      }
+      kit_meta: {
+        Row: { id: boolean; contract_version: number; updated_at: string }
+        Insert: { id?: boolean; contract_version: number; updated_at?: string }
+        Update: { id?: boolean; contract_version?: number; updated_at?: string }
         Relationships: []
       }
     }
@@ -124,10 +264,50 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: { _user_id: string; _role: "admin" }
+        Returns: boolean
+      }
+      kit_timezone: { Args: Record<PropertyKey, never>; Returns: string }
+      analytics_traffic: {
+        Args: { p_from: string; p_to: string }
+        Returns: { day: string; pageviews: number; unique_visitors: number }[]
+      }
+      analytics_top_pages: {
+        Args: { p_from: string; p_to: string; p_limit?: number }
+        Returns: { path: string; pageviews: number; unique_visitors: number }[]
+      }
+      analytics_sources: {
+        Args: { p_from: string; p_to: string }
+        Returns: { source: string; referrer_host: string; pageviews: number }[]
+      }
+      analytics_conversions: {
+        Args: { p_from: string; p_to: string }
+        Returns: Json
+      }
+      confirm_session_request: {
+        Args: { p_id: string; p_notes?: string }
+        Returns: Json
+      }
+      reschedule_session_request: {
+        Args: { p_id: string; p_new_date: string }
+        Returns: Json
+      }
+      confirm_corporate_inquiry: {
+        Args: { p_id: string; p_notes?: string }
+        Returns: Json
+      }
+      reschedule_corporate_inquiry: {
+        Args: { p_id: string; p_new_date: string }
+        Returns: Json
+      }
+      update_contact_message_status: {
+        Args: { p_id: string; p_status: string }
+        Returns: Json
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -136,7 +316,6 @@ export type Database = {
 }
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
@@ -235,25 +414,8 @@ export type Enums<
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: { app_role: ["admin"] as const },
   },
 } as const

@@ -14,6 +14,7 @@ import { BrandLoader } from "@/components/BrandLoader";
 import { ChatWidget } from "@/components/ChatWidget";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
+import { initAnalytics } from "@/lib/analytics";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -470,12 +471,22 @@ function Footer() {
           <FooterLink to="/book">Contact & booking</FooterLink>
           <p className="text-sm text-[color:var(--sand)]">Dhaka, Bangladesh</p>
           <a href="mailto:nirvanawellness.bd@gmail.com" className="text-sm text-[color:var(--sand)] hover:text-[color:var(--gold-soft)]">nirvanawellness.bd@gmail.com</a>
+          <div className="pt-2">
+            <Link to="/admin" className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--gold-soft)]/30 bg-[color:var(--gold-soft)]/10 px-3 py-1 text-xs text-[color:var(--gold-soft)] transition-colors hover:bg-[color:var(--gold-soft)]/20">
+              Admin Portal
+            </Link>
+          </div>
         </FooterCol>
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-2 px-6 py-6 text-xs text-[color:var(--sand)]/70 lg:flex-row lg:items-center lg:px-10">
           <p>© {new Date().getFullYear()} Nirvana Wellness. All rights reserved.</p>
-          <p>Care with dignity, in every season.</p>
+          <div className="flex items-center gap-4">
+            <p>Care with dignity, in every season.</p>
+            <Link to="/admin" className="text-[color:var(--gold-soft)] hover:underline">
+              Admin Portal
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
@@ -500,6 +511,10 @@ function FooterLink({ to, children }: { to: string; children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  useEffect(() => {
+    initAnalytics(router);
+  }, [router]);
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
