@@ -317,8 +317,13 @@ RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $
           GROUP BY status
         ) s
       ),
-      'corporate_inquiries', (SELECT count(*)::int FROM public.corporate_inquiries
-        WHERE (created_at AT TIME ZONE public.kit_timezone())::date BETWEEN p_from AND p_to),
+      'corporate_inquiries', (
+        SELECT jsonb_object_agg(status, n) FROM (
+          SELECT status, count(*)::int AS n FROM public.corporate_inquiries
+          WHERE (created_at AT TIME ZONE public.kit_timezone())::date BETWEEN p_from AND p_to
+          GROUP BY status
+        ) s
+      ),
       'contact_messages', (SELECT count(*)::int FROM public.contact_messages
         WHERE (created_at AT TIME ZONE public.kit_timezone())::date BETWEEN p_from AND p_to),
       'book_page_views', (
@@ -445,3 +450,455 @@ CREATE POLICY outbox_admin_read ON public.notification_outbox
 REVOKE ALL ON public.analytics_events FROM anon, authenticated;
 ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
 GRANT ALL ON public.analytics_events TO service_role;
+
+-- ============================================================
+-- 0008: Admin correctness pass (see migrations/20260726120000_admin_correctness.sql)
+-- ============================================================
+
+ALTER TABLE public.session_requests     ADD COLUMN IF NOT EXISTS admin_notes text;
+ALTER TABLE public.corporate_inquiries  ADD COLUMN IF NOT EXISTS admin_notes text;
+ALTER TABLE public.contact_messages     ADD COLUMN IF NOT EXISTS admin_notes text;
+
+CREATE OR REPLACE FUNCTION public.assert_admin()
+RETURNS void LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF NOT public.has_role(auth.uid(), 'admin') THEN
+    RAISE EXCEPTION 'Not authorised: admin role required.'
+      USING ERRCODE = '42501';
+  END IF;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.assert_submission_type(p_type text)
+RETURNS void LANGUAGE plpgsql IMMUTABLE AS $$
+BEGIN
+  IF p_type NOT IN ('session_request', 'corporate_inquiry', 'contact_message') THEN
+    RAISE EXCEPTION 'Unknown submission type: %', p_type USING ERRCODE = '22023';
+  END IF;
+END;
+$$;
+
+-- Status changes, any table, any starting status. Raises instead of returning
+-- a jsonb {"status":"forbidden"|"not_found"} — the old shape let a denied or
+-- missed update reach the client as a silent success.
+CREATE OR REPLACE FUNCTION public.set_submission_status(
+  p_type   text,
+  p_id     uuid,
+  p_status text
+)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_hit int;
+BEGIN
+  PERFORM public.assert_admin();
+  PERFORM public.assert_submission_type(p_type);
+
+  IF p_status NOT IN ('new', 'contacted', 'confirmed', 'rescheduled', 'cancelled', 'closed') THEN
+    RAISE EXCEPTION 'Unknown status: %', p_status USING ERRCODE = '22023';
+  END IF;
+
+  IF p_type = 'session_request' THEN
+    UPDATE public.session_requests SET status = p_status WHERE id = p_id;
+  ELSIF p_type = 'corporate_inquiry' THEN
+    UPDATE public.corporate_inquiries SET status = p_status WHERE id = p_id;
+  ELSE
+    UPDATE public.contact_messages SET status = p_status WHERE id = p_id;
+  END IF;
+
+  GET DIAGNOSTICS v_hit = ROW_COUNT;
+  IF v_hit = 0 THEN
+    RAISE EXCEPTION 'No % found with id %', p_type, p_id USING ERRCODE = 'P0002';
+  END IF;
+
+  IF p_status IN ('confirmed', 'cancelled') THEN
+    INSERT INTO public.notification_outbox (source_type, source_id, event, payload)
+    VALUES (p_type, p_id, p_status, '{}'::jsonb);
+  END IF;
+END;
+$$;
+
+-- Rescheduling, any table.
+CREATE OR REPLACE FUNCTION public.reschedule_submission(
+  p_type     text,
+  p_id       uuid,
+  p_new_date date
+)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_hit int;
+BEGIN
+  PERFORM public.assert_admin();
+  PERFORM public.assert_submission_type(p_type);
+
+  IF p_new_date IS NULL THEN
+    RAISE EXCEPTION 'A new date is required.' USING ERRCODE = '22023';
+  END IF;
+
+  IF p_type = 'session_request' THEN
+    UPDATE public.session_requests
+       SET status = 'rescheduled', preferred_date = p_new_date
+     WHERE id = p_id;
+  ELSIF p_type = 'corporate_inquiry' THEN
+    UPDATE public.corporate_inquiries
+       SET status = 'rescheduled', preferred_date = p_new_date
+     WHERE id = p_id;
+  ELSE
+    UPDATE public.contact_messages
+       SET status = 'rescheduled', preferred_date = p_new_date
+     WHERE id = p_id;
+  END IF;
+
+  GET DIAGNOSTICS v_hit = ROW_COUNT;
+  IF v_hit = 0 THEN
+    RAISE EXCEPTION 'No % found with id %', p_type, p_id USING ERRCODE = 'P0002';
+  END IF;
+
+  INSERT INTO public.notification_outbox (source_type, source_id, event, payload)
+  VALUES (p_type, p_id, 'rescheduled', jsonb_build_object('new_date', p_new_date));
+END;
+$$;
+
+-- Internal admin notes, any table. Never touches the client's own message field.
+CREATE OR REPLACE FUNCTION public.set_submission_notes(
+  p_type  text,
+  p_id    uuid,
+  p_notes text
+)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_hit int;
+BEGIN
+  PERFORM public.assert_admin();
+  PERFORM public.assert_submission_type(p_type);
+
+  IF p_type = 'session_request' THEN
+    UPDATE public.session_requests SET admin_notes = p_notes WHERE id = p_id;
+  ELSIF p_type = 'corporate_inquiry' THEN
+    UPDATE public.corporate_inquiries SET admin_notes = p_notes WHERE id = p_id;
+  ELSE
+    UPDATE public.contact_messages SET admin_notes = p_notes WHERE id = p_id;
+  END IF;
+
+  GET DIAGNOSTICS v_hit = ROW_COUNT;
+  IF v_hit = 0 THEN
+    RAISE EXCEPTION 'No % found with id %', p_type, p_id USING ERRCODE = 'P0002';
+  END IF;
+END;
+$$;
+
+-- Analytics pipeline health check. /api/collect returns 204 and logs nothing
+-- when SUPABASE_SERVICE_ROLE_KEY or ANALYTICS_SALT are missing on the host, so
+-- a misconfigured deploy is indistinguishable from "nobody visited the site".
+-- The admin panel calls this to tell the two apart instead of drawing an
+-- empty chart.
+CREATE OR REPLACE FUNCTION public.analytics_health()
+RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_total bigint;
+  v_last  timestamptz;
+BEGIN
+  PERFORM public.assert_admin();
+  SELECT count(*), max(occurred_at) INTO v_total, v_last FROM public.analytics_events;
+  RETURN jsonb_build_object(
+    'total_events', v_total,
+    'last_event_at', v_last,
+    'ever_collected', v_total > 0
+  );
+END;
+$$;
+
+-- analytics_sources referrer-host regex was double-escaped ('\\.' instead of
+-- '\.'), so ~* never matched a real hostname and every referrer fell into
+-- 'referral'. Single-escape it.
+CREATE OR REPLACE FUNCTION public.analytics_sources(p_from date, p_to date)
+RETURNS TABLE(source text, referrer_host text, pageviews bigint)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT
+    CASE
+      WHEN e.referrer_host IS NULL OR e.referrer_host = '' THEN 'direct'
+      WHEN e.referrer_host ~* '(^|\.)(google|bing|yahoo|duckduckgo)\.' THEN 'search'
+      WHEN e.referrer_host ~* '(^|\.)(facebook|instagram|twitter|linkedin|youtube|whatsapp|tiktok)\.' THEN 'social'
+      ELSE 'referral'
+    END AS source,
+    e.referrer_host,
+    count(*)::bigint AS pageviews
+  FROM public.analytics_events e
+  WHERE public.has_role(auth.uid(), 'admin')
+    AND e.event_type = 'pageview'
+    AND (e.occurred_at AT TIME ZONE public.kit_timezone())::date BETWEEN p_from AND p_to
+  GROUP BY 1, 2 ORDER BY pageviews DESC;
+$$;
+
+REVOKE ALL ON FUNCTION public.set_submission_status(text, uuid, text)  FROM public, anon;
+REVOKE ALL ON FUNCTION public.reschedule_submission(text, uuid, date)  FROM public, anon;
+REVOKE ALL ON FUNCTION public.set_submission_notes(text, uuid, text)   FROM public, anon;
+REVOKE ALL ON FUNCTION public.analytics_health()                       FROM public, anon;
+
+GRANT EXECUTE ON FUNCTION public.set_submission_status(text, uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.reschedule_submission(text, uuid, date) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.set_submission_notes(text, uuid, text)  TO authenticated;
+
+-- ============================================================
+-- 0009: Calendar (see migrations/20260727090000_admin_calendar.sql)
+--
+-- Admin-side scheduling only: clients keep requesting a date via the public
+-- form, staff assign the actual appointment slot here. contact_messages have
+-- no appointment concept and are excluded.
+-- ============================================================
+
+ALTER TABLE public.session_requests    ADD COLUMN IF NOT EXISTS scheduled_at timestamptz;
+ALTER TABLE public.session_requests    ADD COLUMN IF NOT EXISTS assigned_expert text;
+ALTER TABLE public.corporate_inquiries ADD COLUMN IF NOT EXISTS scheduled_at timestamptz;
+ALTER TABLE public.corporate_inquiries ADD COLUMN IF NOT EXISTS assigned_expert text;
+
+CREATE INDEX IF NOT EXISTS session_requests_scheduled_idx
+  ON public.session_requests (scheduled_at) WHERE scheduled_at IS NOT NULL;
+CREATE INDEX IF NOT EXISTS corporate_inquiries_scheduled_idx
+  ON public.corporate_inquiries (scheduled_at) WHERE scheduled_at IS NOT NULL;
+
+-- Unified calendar read. Only rows with a slot actually assigned —
+-- unscheduled submissions stay in the Inbox until staff place them here.
+CREATE OR REPLACE FUNCTION public.admin_calendar(p_from date, p_to date)
+RETURNS TABLE(
+  id               uuid,
+  type             text,
+  name             text,
+  status           text,
+  scheduled_at     timestamptz,
+  assigned_expert  text
+)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT id, 'session_request'::text, name, status, scheduled_at, assigned_expert
+  FROM public.session_requests
+  WHERE public.has_role(auth.uid(), 'admin')
+    AND scheduled_at IS NOT NULL
+    AND (scheduled_at AT TIME ZONE public.kit_timezone())::date BETWEEN p_from AND p_to
+  UNION ALL
+  SELECT id, 'corporate_inquiry'::text, name, status, scheduled_at, assigned_expert
+  FROM public.corporate_inquiries
+  WHERE public.has_role(auth.uid(), 'admin')
+    AND scheduled_at IS NOT NULL
+    AND (scheduled_at AT TIME ZONE public.kit_timezone())::date BETWEEN p_from AND p_to
+  ORDER BY 5;
+$$;
+
+-- Assign, move, or clear (p_scheduled_at = NULL) a slot. session_request /
+-- corporate_inquiry only.
+CREATE OR REPLACE FUNCTION public.set_schedule(
+  p_type                 text,
+  p_id                   uuid,
+  p_scheduled_at         timestamptz,
+  p_assigned_expert      text DEFAULT NULL
+)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_hit int;
+BEGIN
+  PERFORM public.assert_admin();
+
+  IF p_type NOT IN ('session_request', 'corporate_inquiry') THEN
+    RAISE EXCEPTION 'Only session requests and corporate inquiries can be scheduled, got: %', p_type
+      USING ERRCODE = '22023';
+  END IF;
+
+  IF p_type = 'session_request' THEN
+    UPDATE public.session_requests
+       SET scheduled_at = p_scheduled_at, assigned_expert = p_assigned_expert
+     WHERE id = p_id;
+  ELSE
+    UPDATE public.corporate_inquiries
+       SET scheduled_at = p_scheduled_at, assigned_expert = p_assigned_expert
+     WHERE id = p_id;
+  END IF;
+
+  GET DIAGNOSTICS v_hit = ROW_COUNT;
+  IF v_hit = 0 THEN
+    RAISE EXCEPTION 'No % found with id %', p_type, p_id USING ERRCODE = 'P0002';
+  END IF;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.admin_calendar(date, date) FROM public, anon;
+REVOKE ALL ON FUNCTION public.set_schedule(text, uuid, timestamptz, text) FROM public, anon;
+
+GRANT EXECUTE ON FUNCTION public.admin_calendar(date, date) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.set_schedule(text, uuid, timestamptz, text) TO authenticated;
+
+-- ============================================================
+-- 0010: Contacts / CRM (see migrations/20260727130000_admin_contacts.sql)
+--
+-- Dedup key is EMAIL ONLY, not phone — session_requests supports "couples"
+-- bookings, so two different people can share a phone number; matching on
+-- phone would wrongly merge their submission histories.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.contacts (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name       text,
+  email      text,
+  phone      text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+DROP TRIGGER IF EXISTS trg_contacts_updated ON public.contacts;
+CREATE TRIGGER trg_contacts_updated BEFORE UPDATE ON public.contacts
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+CREATE UNIQUE INDEX IF NOT EXISTS contacts_email_uniq
+  ON public.contacts (lower(email)) WHERE email IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS public.contact_notes (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  contact_id uuid NOT NULL REFERENCES public.contacts(id) ON DELETE CASCADE,
+  note       text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS contact_notes_contact_idx ON public.contact_notes (contact_id);
+
+ALTER TABLE public.session_requests    ADD COLUMN IF NOT EXISTS contact_id uuid REFERENCES public.contacts(id);
+ALTER TABLE public.corporate_inquiries ADD COLUMN IF NOT EXISTS contact_id uuid REFERENCES public.contacts(id);
+ALTER TABLE public.contact_messages    ADD COLUMN IF NOT EXISTS contact_id uuid REFERENCES public.contacts(id);
+
+CREATE INDEX IF NOT EXISTS session_requests_contact_idx    ON public.session_requests (contact_id);
+CREATE INDEX IF NOT EXISTS corporate_inquiries_contact_idx ON public.corporate_inquiries (contact_id);
+CREATE INDEX IF NOT EXISTS contact_messages_contact_idx    ON public.contact_messages (contact_id);
+
+-- Find-or-create a contact by email (race-safe via ON CONFLICT — this runs
+-- from a BEFORE INSERT trigger on tables the public can insert into
+-- anonymously).
+CREATE OR REPLACE FUNCTION public.upsert_contact(p_name text, p_email text, p_phone text)
+RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_email text := nullif(lower(trim(p_email)), '');
+  v_phone text := nullif(trim(p_phone), '');
+  v_id uuid;
+BEGIN
+  INSERT INTO public.contacts (name, email, phone)
+  VALUES (p_name, v_email, v_phone)
+  ON CONFLICT (lower(email)) WHERE email IS NOT NULL
+    DO UPDATE SET
+      phone      = COALESCE(public.contacts.phone, EXCLUDED.phone),
+      name       = CASE WHEN public.contacts.name IS NULL OR public.contacts.name = ''
+                         THEN EXCLUDED.name ELSE public.contacts.name END,
+      updated_at = now()
+  RETURNING id INTO v_id;
+  RETURN v_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.sync_contact_session_requests()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  NEW.contact_id := public.upsert_contact(NEW.name, NEW.email, NEW.phone);
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS trg_session_requests_contact ON public.session_requests;
+CREATE TRIGGER trg_session_requests_contact BEFORE INSERT ON public.session_requests
+  FOR EACH ROW EXECUTE FUNCTION public.sync_contact_session_requests();
+
+CREATE OR REPLACE FUNCTION public.sync_contact_corporate_inquiries()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  NEW.contact_id := public.upsert_contact(NEW.name, NEW.work_email, NULL);
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS trg_corporate_inquiries_contact ON public.corporate_inquiries;
+CREATE TRIGGER trg_corporate_inquiries_contact BEFORE INSERT ON public.corporate_inquiries
+  FOR EACH ROW EXECUTE FUNCTION public.sync_contact_corporate_inquiries();
+
+CREATE OR REPLACE FUNCTION public.sync_contact_contact_messages()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  NEW.contact_id := public.upsert_contact(NEW.name, NEW.email, NULL);
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS trg_contact_messages_contact ON public.contact_messages;
+CREATE TRIGGER trg_contact_messages_contact BEFORE INSERT ON public.contact_messages
+  FOR EACH ROW EXECUTE FUNCTION public.sync_contact_contact_messages();
+
+-- Backfill any pre-existing rows.
+DO $$
+DECLARE r record;
+BEGIN
+  FOR r IN SELECT id, name, email, phone FROM public.session_requests WHERE contact_id IS NULL LOOP
+    UPDATE public.session_requests SET contact_id = public.upsert_contact(r.name, r.email, r.phone) WHERE id = r.id;
+  END LOOP;
+  FOR r IN SELECT id, name, work_email FROM public.corporate_inquiries WHERE contact_id IS NULL LOOP
+    UPDATE public.corporate_inquiries SET contact_id = public.upsert_contact(r.name, r.work_email, NULL) WHERE id = r.id;
+  END LOOP;
+  FOR r IN SELECT id, name, email FROM public.contact_messages WHERE contact_id IS NULL LOOP
+    UPDATE public.contact_messages SET contact_id = public.upsert_contact(r.name, r.email, NULL) WHERE id = r.id;
+  END LOOP;
+END $$;
+
+-- contacts/contact_notes carry aggregated PII across a person's whole
+-- history, so — unlike the submission tables — there is no public grant on
+-- them at all; everything goes through admin-only RPCs.
+CREATE OR REPLACE FUNCTION public.admin_contacts()
+RETURNS TABLE(
+  id                uuid,
+  name              text,
+  email             text,
+  phone             text,
+  submission_count  bigint,
+  last_submission_at timestamptz
+)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT
+    c.id, c.name, c.email, c.phone,
+    count(s.created_at)::bigint,
+    max(s.created_at)
+  FROM public.contacts c
+  LEFT JOIN (
+    SELECT contact_id, created_at FROM public.session_requests
+    UNION ALL
+    SELECT contact_id, created_at FROM public.corporate_inquiries
+    UNION ALL
+    SELECT contact_id, created_at FROM public.contact_messages
+  ) s ON s.contact_id = c.id
+  WHERE public.has_role(auth.uid(), 'admin')
+  GROUP BY c.id, c.name, c.email, c.phone
+  ORDER BY max(s.created_at) DESC NULLS LAST;
+$$;
+
+CREATE OR REPLACE FUNCTION public.list_contact_notes(p_contact_id uuid)
+RETURNS TABLE(id uuid, note text, created_at timestamptz)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT n.id, n.note, n.created_at
+  FROM public.contact_notes n
+  WHERE public.has_role(auth.uid(), 'admin') AND n.contact_id = p_contact_id
+  ORDER BY n.created_at DESC;
+$$;
+
+CREATE OR REPLACE FUNCTION public.add_contact_note(p_contact_id uuid, p_note text)
+RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE v_id uuid;
+BEGIN
+  PERFORM public.assert_admin();
+  IF trim(coalesce(p_note, '')) = '' THEN
+    RAISE EXCEPTION 'Note cannot be empty.' USING ERRCODE = '22023';
+  END IF;
+  INSERT INTO public.contact_notes (contact_id, note) VALUES (p_contact_id, p_note) RETURNING id INTO v_id;
+  RETURN v_id;
+END;
+$$;
+
+REVOKE ALL ON public.contacts FROM anon, authenticated;
+REVOKE ALL ON public.contact_notes FROM anon, authenticated;
+ALTER TABLE public.contacts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contact_notes ENABLE ROW LEVEL SECURITY;
+GRANT ALL ON public.contacts TO service_role;
+GRANT ALL ON public.contact_notes TO service_role;
+
+REVOKE ALL ON FUNCTION public.admin_contacts() FROM public, anon;
+REVOKE ALL ON FUNCTION public.list_contact_notes(uuid) FROM public, anon;
+REVOKE ALL ON FUNCTION public.add_contact_note(uuid, text) FROM public, anon;
+
+GRANT EXECUTE ON FUNCTION public.admin_contacts() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.list_contact_notes(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.add_contact_note(uuid, text) TO authenticated;
+
+GRANT EXECUTE ON FUNCTION public.analytics_health() TO authenticated;

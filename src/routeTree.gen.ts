@@ -29,6 +29,9 @@ import { Route as ExpertsSlugRouteImport } from './routes/experts.$slug'
 import { Route as ApiCollectRouteImport } from './routes/api/collect'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
+import { Route as AdminContactsRouteImport } from './routes/admin.contacts'
+import { Route as AdminCalendarRouteImport } from './routes/admin.calendar'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as ResourcesTestsIndexRouteImport } from './routes/resources.tests.index'
 import { Route as ResourcesTestsSlugRouteImport } from './routes/resources.tests.$slug'
@@ -134,6 +137,21 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminInboxRoute = AdminInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminContactsRoute = AdminContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCalendarRoute = AdminCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -160,6 +178,9 @@ export interface FileRoutesByFullPath {
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/calendar': typeof AdminCalendarRoute
+  '/admin/contacts': typeof AdminContactsRoute
+  '/admin/inbox': typeof AdminInboxRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/collect': typeof ApiCollectRoute
@@ -182,6 +203,9 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/corporate': typeof CorporateRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/calendar': typeof AdminCalendarRoute
+  '/admin/contacts': typeof AdminContactsRoute
+  '/admin/inbox': typeof AdminInboxRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/collect': typeof ApiCollectRoute
@@ -207,6 +231,9 @@ export interface FileRoutesById {
   '/resources': typeof ResourcesRouteWithChildren
   '/retreats': typeof RetreatsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/calendar': typeof AdminCalendarRoute
+  '/admin/contacts': typeof AdminContactsRoute
+  '/admin/inbox': typeof AdminInboxRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/collect': typeof ApiCollectRoute
@@ -234,6 +261,9 @@ export interface FileRouteTypes {
     | '/resources'
     | '/retreats'
     | '/admin/analytics'
+    | '/admin/calendar'
+    | '/admin/contacts'
+    | '/admin/inbox'
     | '/admin/settings'
     | '/api/chat'
     | '/api/collect'
@@ -256,6 +286,9 @@ export interface FileRouteTypes {
     | '/book'
     | '/corporate'
     | '/admin/analytics'
+    | '/admin/calendar'
+    | '/admin/contacts'
+    | '/admin/inbox'
     | '/admin/settings'
     | '/api/chat'
     | '/api/collect'
@@ -280,6 +313,9 @@ export interface FileRouteTypes {
     | '/resources'
     | '/retreats'
     | '/admin/analytics'
+    | '/admin/calendar'
+    | '/admin/contacts'
+    | '/admin/inbox'
     | '/admin/settings'
     | '/api/chat'
     | '/api/collect'
@@ -453,6 +489,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/inbox': {
+      id: '/admin/inbox'
+      path: '/inbox'
+      fullPath: '/admin/inbox'
+      preLoaderRoute: typeof AdminInboxRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/contacts': {
+      id: '/admin/contacts'
+      path: '/contacts'
+      fullPath: '/admin/contacts'
+      preLoaderRoute: typeof AdminContactsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/calendar': {
+      id: '/admin/calendar'
+      path: '/calendar'
+      fullPath: '/admin/calendar'
+      preLoaderRoute: typeof AdminCalendarRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/analytics': {
       id: '/admin/analytics'
       path: '/analytics'
@@ -479,12 +536,18 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminCalendarRoute: typeof AdminCalendarRoute
+  AdminContactsRoute: typeof AdminContactsRoute
+  AdminInboxRoute: typeof AdminInboxRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminCalendarRoute: AdminCalendarRoute,
+  AdminContactsRoute: AdminContactsRoute,
+  AdminInboxRoute: AdminInboxRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
