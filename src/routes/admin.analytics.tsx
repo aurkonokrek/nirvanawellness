@@ -9,13 +9,24 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
 } from "recharts";
-import { Loader2, TrendingUp, Users, FileText, Share2, Calendar } from "lucide-react";
+import {
+  TrendingUp,
+  Users,
+  FileText,
+  Share2,
+  Calendar,
+  AlertTriangle,
+  Download,
+  Filter,
+} from "lucide-react";
+import { StatTile } from "@/components/admin/StatTile";
+import { EmptyState } from "@/components/admin/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/analytics")({
-  head: () => ({ meta: [{ title: "Analytics · Nirvana Admin" }] }),
+  head: () => ({ meta: [{ title: "Insights · Nirvana Admin" }] }),
   component: AdminAnalyticsPage,
 });
 
@@ -39,9 +50,32 @@ interface SourceRow {
 
 interface ConversionsData {
   session_requests?: Record<string, number>;
-  corporate_inquiries?: number;
+  corporate_inquiries?: Record<string, number>;
   contact_messages?: number;
   book_page_views?: number;
+}
+
+interface AnalyticsHealth {
+  total_events: number;
+  last_event_at: string | null;
+  ever_collected: boolean;
+}
+
+function sumValues(obj: Record<string, number> | undefined) {
+  return Object.values(obj ?? {}).reduce((a, b) => a + b, 0);
+}
+
+function downloadCsv(filename: string, rows: (string | number)[][]) {
+  const csv = rows
+    .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function AdminAnalyticsPage() {
@@ -51,6 +85,7 @@ function AdminAnalyticsPage() {
   const [topPages, setTopPages] = useState<TopPageRow[]>([]);
   const [sources, setSources] = useState<SourceRow[]>([]);
   const [conversions, setConversions] = useState<ConversionsData>({});
+  const [health, setHealth] = useState<AnalyticsHealth | null>(null);
 
   const getDateRange = () => {
     const toDate = new Date();
@@ -67,17 +102,19 @@ function AdminAnalyticsPage() {
     const { from, to } = getDateRange();
 
     try {
-      const [tRes, tpRes, sRes, cRes] = await Promise.all([
+      const [tRes, tpRes, sRes, cRes, hRes] = await Promise.all([
         supabase.rpc("analytics_traffic", { p_from: from, p_to: to }),
         supabase.rpc("analytics_top_pages", { p_from: from, p_to: to, p_limit: 15 }),
         supabase.rpc("analytics_sources", { p_from: from, p_to: to }),
         supabase.rpc("analytics_conversions", { p_from: from, p_to: to }),
+        supabase.rpc("analytics_health"),
       ]);
 
       if (tRes.data) setTraffic(tRes.data as TrafficRow[]);
       if (tpRes.data) setTopPages(tpRes.data as TopPageRow[]);
       if (sRes.data) setSources(sRes.data as SourceRow[]);
       if (cRes.data) setConversions(cRes.data as ConversionsData);
+      if (hRes.data) setHealth(hRes.data as unknown as AnalyticsHealth);
     } catch (e) {
       console.error("Error fetching analytics:", e);
     } finally {
@@ -87,96 +124,223 @@ function AdminAnalyticsPage() {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [days]);
 
   const totalPageviews = traffic.reduce((acc, curr) => acc + (Number(curr.pageviews) || 0), 0);
   const totalUnique = traffic.reduce((acc, curr) => acc + (Number(curr.unique_visitors) || 0), 0);
 
+  const requestedTotal =
+    sumValues(conversions.session_requests) + sumValues(conversions.corporate_inquiries);
+  const confirmedTotal =
+    (conversions.session_requests?.confirmed ?? 0) +
+    (conversions.corporate_inquiries?.confirmed ?? 0);
+  const bookPageViews = conversions.book_page_views ?? 0;
+
+  const funnelStages = [
+    { label: "Site visits", value: totalPageviews },
+    { label: "Viewed Book page", value: bookPageViews },
+    { label: "Requested", value: requestedTotal },
+    { label: "Confirmed", value: confirmedTotal },
+  ];
+
+  function exportTrafficCsv() {
+    downloadCsv(`nirvana-traffic-${days}d.csv`, [
+      ["Day", "Pageviews", "Unique Visitors"],
+      ...traffic.map((r) => [r.day, r.pageviews, r.unique_visitors]),
+    ]);
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header & Date Selector */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 className="font-display text-2xl text-[#F5F1EA]">Traffic & Conversion Analytics</h2>
-          <p className="text-sm text-[#8A8272]">First-party privacy-focused metrics</p>
-        </div>
-        <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 p-1">
-          <Calendar className="ml-2 h-4 w-4 text-[#8A8272]" />
-          {[7, 30, 90].map((d) => (
-            <button
-              key={d}
-              onClick={() => setDays(d)}
-              className={[
-                "rounded-md px-3 py-1.5 text-xs transition-colors",
-                days === d
-                  ? "bg-[#C9A05C] text-[#0B1B3A] font-medium"
-                  : "text-[#8A8272] hover:text-[#F5F1EA]",
-              ].join(" ")}
-            >
-              Last {d} days
-            </button>
-          ))}
+        <p className="text-sm text-muted-foreground">
+          First-party, privacy-focused traffic and conversion data.
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1">
+            <Calendar className="ml-2 h-4 w-4 text-muted-foreground" />
+            {[7, 30, 90].map((d) => (
+              <button
+                key={d}
+                onClick={() => setDays(d)}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-xs transition-colors",
+                  days === d
+                    ? "bg-gold-deep text-white font-medium"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                Last {d} days
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={exportTrafficCsv}
+            disabled={traffic.length === 0}
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs text-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Download className="h-3.5 w-3.5" /> Export CSV
+          </button>
         </div>
       </div>
 
+      {!loading && health && !health.ever_collected && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3.5 text-sm text-amber-900">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <div>
+            <p className="font-medium">Analytics has never recorded a pageview.</p>
+            <p className="mt-0.5 text-amber-800">
+              This usually means{" "}
+              <code className="rounded bg-amber-100 px-1 py-0.5">SUPABASE_SERVICE_ROLE_KEY</code> or{" "}
+              <code className="rounded bg-amber-100 px-1 py-0.5">ANALYTICS_SALT</code> aren't set on
+              the deploy host —{" "}
+              <code className="rounded bg-amber-100 px-1 py-0.5">/api/collect</code> silently
+              returns 204 without either. It doesn't necessarily mean the site has no traffic.
+            </p>
+          </div>
+        </div>
+      )}
+
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-8 w-8 animate-spin text-[#C9A05C]" />
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-72 rounded-xl" />
         </div>
       ) : (
         <>
           {/* Stat Overview Cards */}
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <StatCard
-              icon={<TrendingUp className="h-5 w-5 text-[#C9A05C]" />}
+            <StatTile
+              icon={TrendingUp}
               label="Total Pageviews"
               value={totalPageviews.toLocaleString()}
             />
-            <StatCard
-              icon={<Users className="h-5 w-5 text-[#60A5FA]" />}
-              label="Unique Visitors"
-              value={totalUnique.toLocaleString()}
-            />
-            <StatCard
-              icon={<FileText className="h-5 w-5 text-[#34D399]" />}
+            <StatTile icon={Users} label="Unique Visitors" value={totalUnique.toLocaleString()} />
+            <StatTile
+              icon={FileText}
               label="Book Page Views"
-              value={(conversions.book_page_views || 0).toLocaleString()}
+              value={bookPageViews.toLocaleString()}
             />
-            <StatCard
-              icon={<Share2 className="h-5 w-5 text-[#A78BFA]" />}
-              label="Sessions Requested"
-              value={Object.values(conversions.session_requests || {}).reduce((a, b) => a + b, 0).toLocaleString()}
+            <StatTile
+              icon={Share2}
+              label="Requests Confirmed"
+              value={confirmedTotal.toLocaleString()}
             />
           </div>
 
+          {/* Conversion funnel */}
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm sm:p-6">
+            <h3 className="mb-4 flex items-center gap-2 font-display text-lg text-foreground">
+              <Filter className="h-4 w-4 text-gold-deep" /> Conversion Funnel
+            </h3>
+            <div className="space-y-3">
+              {funnelStages.map((stage, i) => {
+                const max = funnelStages[0].value || 1;
+                const widthPct = Math.max(4, Math.round((stage.value / max) * 100));
+                const pctOfFirst =
+                  funnelStages[0].value > 0
+                    ? Math.round((stage.value / funnelStages[0].value) * 100)
+                    : 0;
+                return (
+                  <div key={stage.label}>
+                    <div className="mb-1 flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">{stage.label}</span>
+                      <span className="tabular-nums text-foreground">
+                        {stage.value.toLocaleString()}
+                        {i > 0 && (
+                          <span className="ml-1.5 text-muted-foreground">({pctOfFirst}%)</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary/50">
+                      <div
+                        className="h-full rounded-full bg-gold-gradient transition-all"
+                        style={{ width: `${widthPct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Traffic Trend Chart */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
-            <h3 className="mb-4 font-display text-lg text-[#F5F1EA]">Visitor & Pageview Trends</h3>
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm sm:p-6">
+            <h3 className="mb-4 font-display text-lg text-foreground">
+              Visitor &amp; Pageview Trends
+            </h3>
             {traffic.length === 0 ? (
-              <div className="py-16 text-center text-[#8A8272]">No traffic recorded in this timeframe yet.</div>
+              <EmptyState
+                icon={TrendingUp}
+                title="No traffic recorded"
+                description="Once pageviews start coming in, this chart fills in automatically."
+              />
             ) : (
-              <div className="h-72 w-full">
+              <div className="h-64 w-full sm:h-72">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={traffic}>
+                  <AreaChart data={traffic} margin={{ left: -20, right: 8 }}>
                     <defs>
                       <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#C9A05C" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#C9A05C" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#B8862E" stopOpacity={0.35} />
+                        <stop offset="95%" stopColor="#B8862E" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#60A5FA" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#60A5FA" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#2563EB" stopOpacity={0.25} />
+                        <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="day" stroke="#8A8272" tickLine={false} style={{ fontSize: "12px" }} />
-                    <YAxis stroke="#8A8272" tickLine={false} style={{ fontSize: "12px" }} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: "#0B1B3A", borderColor: "rgba(255,255,255,0.1)", borderRadius: "8px" }}
-                      itemStyle={{ color: "#F5F1EA", fontSize: "12px" }}
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="oklch(0.88 0.015 82)"
+                      vertical={false}
                     />
-                    <Area type="monotone" dataKey="pageviews" name="Pageviews" stroke="#C9A05C" fillOpacity={1} fill="url(#colorPv)" />
-                    <Area type="monotone" dataKey="unique_visitors" name="Unique Visitors" stroke="#60A5FA" fillOpacity={1} fill="url(#colorUv)" />
+                    <XAxis
+                      dataKey="day"
+                      stroke="var(--stone)"
+                      tickLine={false}
+                      axisLine={false}
+                      interval="preserveStartEnd"
+                      minTickGap={32}
+                      style={{ fontSize: "11px" }}
+                    />
+                    <YAxis
+                      stroke="var(--stone)"
+                      tickLine={false}
+                      axisLine={false}
+                      width={36}
+                      style={{ fontSize: "11px" }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "var(--card)",
+                        borderColor: "var(--border)",
+                        borderRadius: "8px",
+                        fontSize: "12px",
+                      }}
+                      labelStyle={{ color: "var(--foreground)" }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="pageviews"
+                      name="Pageviews"
+                      stroke="#B8862E"
+                      fillOpacity={1}
+                      fill="url(#colorPv)"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="unique_visitors"
+                      name="Unique Visitors"
+                      stroke="#2563EB"
+                      fillOpacity={1}
+                      fill="url(#colorUv)"
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -184,20 +348,27 @@ function AdminAnalyticsPage() {
           </div>
 
           {/* Breakdown Tables / Grids */}
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             {/* Top Visited Pages */}
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
-              <h3 className="mb-4 font-display text-lg text-[#F5F1EA]">Top Visited Pages</h3>
+            <div className="rounded-xl border border-border bg-card p-4 shadow-sm sm:p-6">
+              <h3 className="mb-4 font-display text-lg text-foreground">Top Visited Pages</h3>
               {topPages.length === 0 ? (
-                <div className="py-12 text-center text-sm text-[#8A8272]">No page data recorded.</div>
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  No page data recorded.
+                </p>
               ) : (
                 <div className="space-y-2">
                   {topPages.map((tp) => (
-                    <div key={tp.path} className="flex items-center justify-between border-b border-white/5 pb-2 text-sm">
-                      <span className="font-mono text-xs text-[#E8C878] truncate max-w-[240px]">{tp.path}</span>
-                      <div className="flex gap-4 text-xs text-[#8A8272]">
+                    <div
+                      key={tp.path}
+                      className="flex items-center gap-3 border-b border-border pb-2 text-sm last:border-0"
+                    >
+                      <span className="min-w-0 flex-1 truncate font-mono text-xs text-gold-deep">
+                        {tp.path}
+                      </span>
+                      <div className="flex shrink-0 gap-3 text-xs text-muted-foreground">
                         <span>{tp.pageviews} views</span>
-                        <span>{tp.unique_visitors} unique</span>
+                        <span className="hidden sm:inline">{tp.unique_visitors} unique</span>
                       </div>
                     </div>
                   ))}
@@ -206,19 +377,27 @@ function AdminAnalyticsPage() {
             </div>
 
             {/* Referral Sources */}
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
-              <h3 className="mb-4 font-display text-lg text-[#F5F1EA]">Traffic Channels</h3>
+            <div className="rounded-xl border border-border bg-card p-4 shadow-sm sm:p-6">
+              <h3 className="mb-4 font-display text-lg text-foreground">Traffic Channels</h3>
               {sources.length === 0 ? (
-                <div className="py-12 text-center text-sm text-[#8A8272]">No source data recorded.</div>
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  No source data recorded.
+                </p>
               ) : (
                 <div className="space-y-3">
                   {sources.slice(0, 10).map((s, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="capitalize rounded bg-white/10 px-2 py-0.5 text-[10px] text-[#C9A05C]">{s.source}</span>
-                        <span className="text-xs text-[#F5F1EA]">{s.referrer_host || "Direct / Bookmark"}</span>
+                    <div key={idx} className="flex items-center justify-between gap-3 text-sm">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className="shrink-0 rounded bg-secondary px-2 py-0.5 text-[10px] capitalize text-gold-deep">
+                          {s.source}
+                        </span>
+                        <span className="truncate text-xs text-foreground">
+                          {s.referrer_host || "Direct / Bookmark"}
+                        </span>
                       </div>
-                      <span className="text-xs text-[#8A8272]">{s.pageviews} views</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {s.pageviews} views
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -227,18 +406,6 @@ function AdminAnalyticsPage() {
           </div>
         </>
       )}
-    </div>
-  );
-}
-
-function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-[#8A8272]">{label}</span>
-        {icon}
-      </div>
-      <div className="mt-2 font-display text-3xl text-[#F5F1EA]">{value}</div>
     </div>
   );
 }

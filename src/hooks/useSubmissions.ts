@@ -2,7 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export type SubmissionType = "session_request" | "corporate_inquiry" | "contact_message";
-export type SubmissionStatus = "new" | "contacted" | "confirmed" | "rescheduled" | "cancelled" | "closed";
+export type SubmissionStatus =
+  | "new"
+  | "contacted"
+  | "confirmed"
+  | "rescheduled"
+  | "cancelled"
+  | "closed";
 
 export interface Submission {
   id: string;
@@ -13,6 +19,7 @@ export interface Submission {
   organisation?: string | null;
   message?: string | null;
   notes?: string | null;
+  admin_notes: string | null;
   context?: string | null;
   session_type?: string | null;
   preferred_format?: string | null;
@@ -22,23 +29,38 @@ export interface Submission {
   preferred_date: string | null;
   status: string;
   created_at: string;
+  updated_at: string;
+  /** session_request / corporate_inquiry only — contact_messages have no appointment concept. */
+  scheduled_at: string | null;
+  assigned_expert: string | null;
+  contact_id: string | null;
 }
 
 async function fetchSubmissions(): Promise<Submission[]> {
   const [sessionRes, corporateRes, contactRes] = await Promise.all([
     supabase
       .from("session_requests")
-      .select("id,name,email,phone,session_type,preferred_format,timezone,expert_name,preferred_date,notes,status,created_at")
+      .select(
+        "id,name,email,phone,session_type,preferred_format,timezone,expert_name,preferred_date,notes,admin_notes,status,created_at,updated_at,scheduled_at,assigned_expert,contact_id",
+      )
       .order("created_at", { ascending: false }),
     supabase
       .from("corporate_inquiries")
-      .select("id,name,work_email,organisation,program_interest,context,preferred_date,status,created_at")
+      .select(
+        "id,name,work_email,organisation,program_interest,context,preferred_date,admin_notes,status,created_at,updated_at,scheduled_at,assigned_expert,contact_id",
+      )
       .order("created_at", { ascending: false }),
     supabase
       .from("contact_messages")
-      .select("id,name,email,message,preferred_date,status,created_at")
+      .select(
+        "id,name,email,message,preferred_date,admin_notes,status,created_at,updated_at,contact_id",
+      )
       .order("created_at", { ascending: false }),
   ]);
+
+  if (sessionRes.error) throw sessionRes.error;
+  if (corporateRes.error) throw corporateRes.error;
+  if (contactRes.error) throw contactRes.error;
 
   const sessions: Submission[] = (sessionRes.data ?? []).map((r) => ({
     ...r,
@@ -74,6 +96,8 @@ async function fetchSubmissions(): Promise<Submission[]> {
     timezone: null,
     expert_name: null,
     program_interest: null,
+    scheduled_at: null,
+    assigned_expert: null,
   }));
 
   return [...sessions, ...corporate, ...contacts].sort(
@@ -90,53 +114,110 @@ export function useSubmissions() {
     queryFn: fetchSubmissions,
   });
 
-  const confirmSession = useMutation({
-    mutationFn: async ({ id, notes }: { id: string; notes?: string }) => {
-      const { error } = await supabase.rpc("confirm_session_request", { p_id: id, p_notes: notes });
+  // Handles every (type, status) pair through one RPC — the old code routed
+  // "Close" through update_contact_message_status regardless of type, which
+  // only ever touched contact_messages, so closing a session silently
+  // updated zero rows. set_submission_status now raises on a missed or
+  // forbidden update instead of returning a jsonb {"status":"not_found"}
+  // that supabase-js can't see, so mutateAsync rejects and callers' catch
+  // blocks actually fire.
+  const setStatus = useMutation({
+    mutationFn: async ({
+      type,
+      id,
+      status,
+    }: {
+      type: SubmissionType;
+      id: string;
+      status: SubmissionStatus;
+    }) => {
+      const { error } = await supabase.rpc("set_submission_status", {
+        p_type: type,
+        p_id: id,
+        p_status: status,
+      });
       if (error) throw error;
     },
     onSuccess: inv,
   });
 
-  const rescheduleSession = useMutation({
-    mutationFn: async ({ id, newDate }: { id: string; newDate: string }) => {
-      const { error } = await supabase.rpc("reschedule_session_request", { p_id: id, p_new_date: newDate });
+  const reschedule = useMutation({
+    mutationFn: async ({
+      type,
+      id,
+      newDate,
+    }: {
+      type: SubmissionType;
+      id: string;
+      newDate: string;
+    }) => {
+      const { error } = await supabase.rpc("reschedule_submission", {
+        p_type: type,
+        p_id: id,
+        p_new_date: newDate,
+      });
       if (error) throw error;
     },
     onSuccess: inv,
   });
 
-  const confirmCorporate = useMutation({
-    mutationFn: async ({ id }: { id: string }) => {
-      const { error } = await supabase.rpc("confirm_corporate_inquiry", { p_id: id });
+  const setNotes = useMutation({
+    mutationFn: async ({
+      type,
+      id,
+      notes,
+    }: {
+      type: SubmissionType;
+      id: string;
+      notes: string;
+    }) => {
+      const { error } = await supabase.rpc("set_submission_notes", {
+        p_type: type,
+        p_id: id,
+        p_notes: notes,
+      });
       if (error) throw error;
     },
     onSuccess: inv,
   });
 
-  const rescheduleCorporate = useMutation({
-    mutationFn: async ({ id, newDate }: { id: string; newDate: string }) => {
-      const { error } = await supabase.rpc("reschedule_corporate_inquiry", { p_id: id, p_new_date: newDate });
+  const setSchedule = useMutation({
+    mutationFn: async ({
+      type,
+      id,
+      scheduledAt,
+      assignedExpert,
+    }: {
+      type: "session_request" | "corporate_inquiry";
+      id: string;
+      /** null clears the slot */
+      scheduledAt: string | null;
+      assignedExpert?: string | null;
+    }) => {
+      // p_scheduled_at has no SQL DEFAULT, so NULL (unschedule) must be sent
+      // explicitly — but the generated Args type doesn't model that a
+      // nullable-column param can legally be null when there's no DEFAULT,
+      // so it types as plain `string`. Cast reflects a real, valid DB call.
+      const { error } = await supabase.rpc("set_schedule", {
+        p_type: type,
+        p_id: id,
+        p_scheduled_at: scheduledAt as string,
+        ...(assignedExpert ? { p_assigned_expert: assignedExpert } : {}),
+      });
       if (error) throw error;
     },
-    onSuccess: inv,
-  });
-
-  const updateContactStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase.rpc("update_contact_message_status", { p_id: id, p_status: status });
-      if (error) throw error;
+    onSuccess: () => {
+      inv();
+      qc.invalidateQueries({ queryKey: ["calendar"] });
     },
-    onSuccess: inv,
   });
 
   return {
     submissions,
     isLoading,
-    confirmSession: confirmSession.mutateAsync,
-    rescheduleSession: rescheduleSession.mutateAsync,
-    confirmCorporate: confirmCorporate.mutateAsync,
-    rescheduleCorporate: rescheduleCorporate.mutateAsync,
-    updateContactStatus: updateContactStatus.mutateAsync,
+    setStatus: setStatus.mutateAsync,
+    reschedule: reschedule.mutateAsync,
+    setNotes: setNotes.mutateAsync,
+    setSchedule: setSchedule.mutateAsync,
   };
 }

@@ -512,9 +512,27 @@ function FooterLink({ to, children }: { to: string; children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   useEffect(() => {
     initAnalytics(router);
   }, [router]);
+
+  // The admin panel is an internal ops tool with its own shell (sidebar,
+  // header, bottom nav) — it must not sit inside the public marketing
+  // Header/Footer/ChatWidget, which previously wrapped every route
+  // unconditionally and made the admin read as a page bolted onto the
+  // public site rather than a real app.
+  if (isAdmin) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+        <BrandLoader />
+        <Toaster position="top-center" richColors />
+      </QueryClientProvider>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
